@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Tracker — Structural Engineering Office</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --bg:#0c1a26;
+  --bg2:#0f2033;
+  --panel:#122a3f;
+  --panel2:#173754;
+  --grid:rgba(120,170,210,0.07);
+  --border:#22415c;
+  --text:#e7f0f6;
+  --dim:#8fadc4;
+  --accent:#f2994a;
+  --accent-dim:#c97a38;
+  --ok:#4fc38a;
+  --warn:#f2c94a;
+  --danger:#e2574c;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Space Grotesk',sans-serif;
+  --body:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:28px 28px;
+  min-height:100vh;
+}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* ---------- LOGIN ---------- */
+#login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.blueprint-corner{position:absolute;width:22px;height:22px;border:2px solid var(--accent);opacity:.55;}
+.bc-tl{top:24px;left:24px;border-right:none;border-bottom:none;}
+.bc-tr{top:24px;right:24px;border-left:none;border-bottom:none;}
+.bc-bl{bottom:24px;left:24px;border-right:none;border-top:none;}
+.bc-br{bottom:24px;right:24px;border-left:none;border-top:none;}
+.login-card{
+  width:360px;background:var(--panel);border:1px solid var(--border);border-radius:6px;
+  padding:36px 32px;text-align:center;position:relative;
+}
+.login-card::before{
+  content:'PROJECT DIRECTORY // ACCESS';
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--bg);padding:0 10px;font-family:var(--mono);font-size:11px;
+  letter-spacing:2px;color:var(--dim);
+}
+.compass{width:52px;height:52px;margin:0 auto 14px;border:2px solid var(--accent);border-radius:50%;
+  position:relative;}
+.compass::before,.compass::after{content:'';position:absolute;background:var(--accent);}
+.compass::before{width:2px;height:26px;top:6px;left:50%;transform:translateX(-50%) rotate(20deg);transform-origin:bottom;}
+.compass::after{width:2px;height:26px;top:6px;left:50%;transform:translateX(-50%) rotate(-45deg);transform-origin:bottom;}
+.login-card h1{font-family:var(--display);font-size:20px;margin:6px 0 2px;letter-spacing:.5px;}
+.login-card p{color:var(--dim);font-size:12.5px;margin:0 0 22px;}
+.login-card input{
+  width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);font-family:var(--mono);font-size:14px;margin-bottom:12px;
+}
+.login-card input:focus{outline:none;border-color:var(--accent);}
+.btn{
+  width:100%;padding:12px 14px;background:var(--accent);color:#1a1005;border:none;border-radius:4px;
+  font-family:var(--display);font-weight:600;font-size:14px;cursor:pointer;letter-spacing:.3px;
+  transition:background .15s;
+}
+.btn:hover{background:#ffab6b;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:transparent;}
+.login-error{color:var(--danger);font-size:12px;margin-top:8px;height:14px;font-family:var(--mono);}
+
+/* ---------- APP SHELL ---------- */
+#app{display:none;min-height:100vh;}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+.sidebar{
+  background:var(--bg2);border-right:1px solid var(--border);padding:22px 16px;
+  display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;
+}
+.brand{font-family:var(--display);font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px;margin-bottom:26px;}
+.brand .dot{width:9px;height:9px;background:var(--accent);border-radius:2px;transform:rotate(45deg);}
+.nav-item{
+  padding:10px 12px;border-radius:5px;color:var(--dim);cursor:pointer;font-size:13.5px;
+  display:flex;align-items:center;gap:10px;font-family:var(--body);font-weight:500;
+  border-left:2px solid transparent;
+}
+.nav-item:hover{color:var(--text);background:var(--panel);}
+.nav-item.active{color:var(--accent);background:var(--panel);border-left:2px solid var(--accent);}
+.nav-num{font-family:var(--mono);font-size:11px;color:var(--dim);width:16px;}
+.sidebar-foot{margin-top:auto;font-size:11px;color:var(--dim);font-family:var(--mono);padding-top:16px;border-top:1px solid var(--border);}
+.logout-link{color:var(--danger);cursor:pointer;text-decoration:underline;}
+
+.main{padding:26px 32px 60px;overflow-y:auto;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+.topbar h2{font-family:var(--display);font-size:22px;margin:0;}
+.topbar .sub{color:var(--dim);font-size:12.5px;font-family:var(--mono);}
+.year-picker{display:flex;align-items:center;gap:8px;}
+select, input[type=text], input[type=date], input[type=number], textarea{
+  background:var(--panel);border:1px solid var(--border);color:var(--text);padding:8px 10px;
+  border-radius:4px;font-family:var(--body);font-size:13px;
+}
+select:focus, input:focus, textarea:focus{outline:none;border-color:var(--accent);}
+.icon-btn{
+  width:34px;height:34px;border-radius:4px;background:var(--panel);border:1px solid var(--border);
+  color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.grid-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:16px 18px;}
+.stat-card .num{font-family:var(--mono);font-size:26px;color:var(--accent);font-weight:700;}
+.stat-card .label{font-size:12px;color:var(--dim);margin-top:2px;}
+
+.month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.month-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:16px;cursor:pointer;
+  position:relative;transition:border-color .15s, transform .1s;
+}
+.month-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.month-card::before{
+  content:'';position:absolute;top:0;right:0;width:0;height:0;
+  border-style:solid;border-width:0 16px 16px 0;border-color:transparent var(--border) transparent transparent;
+}
+.month-card .m-name{font-family:var(--display);font-size:15px;margin-bottom:8px;}
+.month-card .m-count{font-family:var(--mono);font-size:24px;color:var(--accent);}
+.month-card .m-label{font-size:11px;color:var(--dim);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{
+  text-align:left;padding:9px 10px;color:var(--dim);font-weight:600;font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);
+  font-family:var(--mono);
+}
+td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:hover td{background:rgba(242,153,74,0.04);}
+.badge{
+  display:inline-block;padding:3px 8px;border-radius:3px;font-size:11px;font-family:var(--mono);
+  border:1px solid var(--border);
+}
+.badge.done{color:var(--ok);border-color:var(--ok);}
+.badge.progress{color:var(--warn);border-color:var(--warn);}
+.badge.pending{color:var(--dim);}
+.badge.notstarted{color:var(--danger);border-color:var(--danger);}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:12px;color:var(--dim);font-family:var(--mono);}
+.field.full{grid-column:1 / -1;}
+.section-title{
+  font-family:var(--display);font-size:13px;color:var(--accent);margin:18px 0 10px;
+  letter-spacing:1px;text-transform:uppercase;border-top:1px dashed var(--border);padding-top:14px;
+}
+.status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.discipline-table{width:100%;border-collapse:collapse;}
+.discipline-table th{font-size:11px;}
+.discipline-table td{padding:8px 6px;}
+.discipline-table input, .discipline-table select{width:100%;padding:7px 8px;font-size:12.5px;}
+.discipline-table .disc-name{font-family:var(--display);font-size:13px;color:var(--text);white-space:nowrap;}
+
+.flag-box{display:flex;align-items:flex-start;gap:20px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;}
+.light-toggle{
+  width:50px;height:50px;border-radius:50%;flex:none;cursor:pointer;border:3px solid var(--border);
+  transition:box-shadow .2s, background .2s;
+}
+.light-toggle.green{background:var(--ok);box-shadow:0 0 16px 2px rgba(79,195,138,.65);border-color:var(--ok);}
+.light-toggle.red{background:var(--danger);box-shadow:0 0 16px 2px rgba(226,87,76,.65);border-color:var(--danger);}
+.flag-fields{flex:1;display:flex;flex-direction:column;gap:8px;}
+.flag-fields textarea{width:100%;}
+.flag-hint{font-size:11px;color:var(--dim);font-family:var(--mono);}
+.status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.status-dot.green{background:var(--ok);box-shadow:0 0 6px 1px rgba(79,195,138,.6);}
+.status-dot.red{background:var(--danger);box-shadow:0 0 6px 1px rgba(226,87,76,.6);}
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.filters > *{flex:1;min-width:150px;}
+
+.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;}
+.chart-box{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.chart-box h3{font-family:var(--display);font-size:14px;margin:0 0 14px;color:var(--text);}
+
+.empty{color:var(--dim);text-align:center;padding:40px 0;font-family:var(--mono);font-size:13px;}
+.modal-bg{position:fixed;inset:0;background:rgba(5,12,18,.72);display:none;align-items:flex-start;justify-content:center;
+  padding:40px 16px;overflow-y:auto;z-index:50;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:26px 28px;width:720px;max-width:100%;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.modal-head h3{font-family:var(--display);margin:0;font-size:17px;}
+.close-x{cursor:pointer;color:var(--dim);font-size:20px;background:none;border:none;}
+.close-x:hover{color:var(--danger);}
+.actions-row{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+.btn-sm{padding:9px 16px;width:auto;font-size:13px;}
+.backup-box{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;}
+.backup-box .card{flex:1;min-width:260px;}
+.tag-input-wrap{display:flex;gap:8px;}
+select.status-select option{background:var(--panel);}
+.remark-preview{color:var(--dim);font-size:12px;}
+.action-icons span{cursor:pointer;margin-right:10px;color:var(--dim);}
+.action-icons span:hover{color:var(--accent);}
+@media(max-width:1000px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{position:relative;height:auto;flex-direction:row;overflow-x:auto;}
+  .grid-cards,.month-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid,.status-row,.chart-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login-screen">
+  <div class="blueprint-corner bc-tl"></div>
+  <div class="blueprint-corner bc-tr"></div>
+  <div class="blueprint-corner bc-bl"></div>
+  <div class="blueprint-corner bc-br"></div>
+  <div class="login-card">
+    <div class="compass"></div>
+    <h1>PROJECT DIRECTORY</h1>
+    <p>প্রতিমাসের প্রজেক্ট রেকর্ড ও পরিসংখ্যান</p>
+    <input type="password" id="pw-input" placeholder="Password দিন" autocomplete="off">
+    <button class="btn" onclick="tryLogin()">প্রবেশ করুন</button>
+    <div class="login-error" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+<div class="shell">
+  <div class="sidebar">
+    <div class="brand"><span class="dot"></span> PROJECT.DIR</div>
+    <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')"><span class="nav-num">01</span> Dashboard</div>
+    <div class="nav-item" data-view="add" onclick="switchView('add')"><span class="nav-num">02</span> নতুন প্রজেক্ট</div>
+    <div class="nav-item" data-view="list" onclick="switchView('list')"><span class="nav-num">03</span> সব প্রজেক্ট</div>
+    <div class="nav-item" data-view="stats" onclick="switchView('stats')"><span class="nav-num">04</span> পরিসংখ্যান</div>
+    <div class="nav-item" data-view="backup" onclick="switchView('backup')"><span class="nav-num">05</span> ব্যাকআপ</div>
+    <div class="sidebar-foot">
+      <span id="drive-status-mini" style="color:var(--dim);">Drive: সংযুক্ত নয়</span><br><br>
+      কাজ শেষে <b style="color:var(--accent)">Export</b> করে সংরক্ষণ করুন (Drive সংযুক্ত না থাকলে)।<br><br>
+      <span class="logout-link" onclick="logout()">লগ-আউট</span>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <div id="view-dashboard">
+      <div class="topbar">
+        <div>
+          <h2>Dashboard</h2>
+          <div class="sub" id="dash-sub">YEAR OVERVIEW</div>
+        </div>
+        <div class="year-picker">
+          <button class="icon-btn" onclick="changeYear(-1)">‹</button>
+          <select id="year-select-dash" onchange="onDashYearChange()"></select>
+          <button class="icon-btn" onclick="changeYear(1)">›</button>
+          <button class="icon-btn" title="নতুন বছর যোগ করুন" onclick="addYear()">+</button>
+        </div>
+      </div>
+
+      <div class="grid-cards" id="stat-cards"></div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0;">মাস অনুযায়ী প্রজেক্ট — <span id="dash-year-label"></span></div>
+        <div class="month-grid" id="month-grid"></div>
+      </div>
+    </div>
+
+    <!-- ---------- MONTH DETAIL (day list) ---------- -->
+    <div id="view-month" style="display:none;">
+      <div class="topbar">
+        <div>
+          <h2 id="month-title">Month</h2>
+          <div class="sub">DAY-WISE ENTRIES</div>
+        </div>
+        <button class="btn btn-sm" style="width:auto;" onclick="switchView('dashboard')">← Dashboard</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>তারিখ</th><th>Project #</th><th>Client / Project</th><th>Storey</th><th>Location</th><th>Status</th><th></th></tr></thead>
+          <tbody id="month-table-body"></tbody>
+        </table>
+        <div class="empty" id="month-empty" style="display:none;">এই মাসে কোনো প্রজেক্ট নেই।</div>
+      </div>
+    </div>
+
+    <!-- ---------- ADD PROJECT ---------- -->
+    <div id="view-add" style="display:none;">
+      <div class="topbar"><div><h2 id="add-title">নতুন প্রজেক্ট যোগ করুন</h2><div class="sub">PROJECT ENTRY FORM</div></div></div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field"><label>তারিখ (Date)</label><input type="date" id="f-date"></div>
+          <div class="field"><label>Project Number</label><input type="text" id="f-pnum" placeholder="যেমনঃ 1"></div>
+          <div class="field"><label>Project Name / Client</label><input type="text" id="f-pname" placeholder="যেমনঃ Shaban Ali"></div>
+          <div class="field"><label>Storey</label><input type="text" id="f-storey" placeholder="যেমনঃ G+2"></div>
+          <div class="field"><label>Location</label><input type="text" id="f-location" placeholder="যেমনঃ Kushtia"></div>
+          <div class="field"><label>Name of Employee (Engineer)</label><input type="text" id="f-employee" placeholder="যেমনঃ Engr. Avash"></div>
+          <div class="field"><label>Received Date</label><input type="date" id="f-received"></div>
+          <div class="field"><label>Submission Date</label><input type="date" id="f-submission"></div>
+          <div class="field"><label>Soil Test</label><input type="text" id="f-soiltest" placeholder="যেমনঃ 1 TSF"></div>
+          <div class="field"><label>Soil Test Receive Date</label><input type="date" id="f-soiltest-date"></div>
+          <div class="field"><label>Plan</label><input type="text" id="f-plan" placeholder="Plan বিবরণ"></div>
+          <div class="field"><label>3D Receive Date</label><input type="date" id="f-3d-date"></div>
+          <div class="field full"><label>Plan Issues</label><input type="text" id="f-planissues"></div>
+        </div>
+
+        <div class="section-title">কাজের অবস্থা (কে করেছে, কবে রিসিভ করেছে, কবে শেষ করেছে)</div>
+        <table class="discipline-table">
+          <thead><tr><th></th><th>Done By</th><th>Status</th><th>Receive Date</th><th>Completion Date</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="disc-name">Structural</td>
+              <td><input type="text" id="f-structural-doneby" placeholder="নাম"></td>
+              <td><select id="f-structural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
+              <td><input type="date" id="f-structural-received"></td>
+              <td><input type="date" id="f-structural-completed"></td>
+            </tr>
+            <tr>
+              <td class="disc-name">Architectural</td>
+              <td><input type="text" id="f-architectural-doneby" placeholder="নাম"></td>
+              <td><select id="f-architectural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
+              <td><input type="date" id="f-architectural-received"></td>
+              <td><input type="date" id="f-architectural-completed"></td>
+            </tr>
+            <tr>
+              <td class="disc-name">Electrical</td>
+              <td><input type="text" id="f-electrical-doneby" placeholder="নাম"></td>
+              <td><select id="f-electrical-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
+              <td><input type="date" id="f-electrical-received"></td>
+              <td><input type="date" id="f-electrical-completed"></td>
+            </tr>
+            <tr>
+              <td class="disc-name">Plumbing</td>
+              <td><input type="text" id="f-plumbing-doneby" placeholder="নাম"></td>
+              <td><select id="f-plumbing-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
+              <td><input type="date" id="f-plumbing-received"></td>
+              <td><input type="date" id="f-plumbing-completed"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="section-title">Remarks</div>
+        <textarea id="f-remarks" rows="3" style="width:100%;"></textarea>
+
+        <div class="section-title">সতর্কতা সংকেত (Pressure / Duress Flag)</div>
+        <div class="flag-box">
+          <div class="light-toggle green" id="flag-light" onclick="toggleFlag()" title="ক্লিক করে Red/Green পরিবর্তন করুন"></div>
+          <div class="flag-fields">
+            <div class="flag-hint">সবুজ = স্বাভাবিক, লাল = সতর্কতা। ক্লিক করে বাতি পরিবর্তন করুন।</div>
+            <textarea id="f-flag-note" rows="2" placeholder="মন্তব্য লিখুন — যেমনঃ কেউ কি জোর করে ডিজাইন করতে বাধ্য করছে?"></textarea>
+            <div>
+              <label style="font-size:12px;color:var(--dim);font-family:var(--mono);display:block;margin-bottom:6px;">প্রয়োজনীয় ছবি আপলোড করুন</label>
+              <input type="file" id="f-flag-image" accept="image/*" onchange="previewFlagImage(event)">
+              <div>
+                <img id="flag-image-preview" style="display:none;max-width:180px;border-radius:5px;margin-top:10px;border:1px solid var(--border);">
+                <button type="button" class="btn-ghost" id="flag-image-remove" style="display:none;width:auto;padding:6px 12px;font-size:11px;margin-top:8px;" onclick="removeFlagImage()">ছবি সরান</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn btn-ghost btn-sm" onclick="resetForm()">Clear</button>
+          <button class="btn btn-sm" style="width:auto;" onclick="saveProject()">Save Project</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- ALL PROJECTS / SEARCH ---------- -->
+    <div id="view-list" style="display:none;">
+      <div class="topbar"><div><h2>সব প্রজেক্ট</h2><div class="sub">ADVANCED SEARCH</div></div></div>
+      <div class="filters">
+        <input type="text" id="filt-name" placeholder="Client / Project Name" oninput="renderList()">
+        <input type="text" id="filt-location" placeholder="Location" oninput="renderList()">
+        <input type="text" id="filt-storey" placeholder="Storey (e.g. G+2)" oninput="renderList()">
+        <select id="filt-status" onchange="renderList()">
+          <option value="">সব Status</option>
+          <option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option>
+        </select>
+        <select id="filt-flag" onchange="renderList()">
+          <option value="">সব সংকেত</option>
+          <option value="red">শুধু লাল (সতর্কতা)</option>
+          <option value="green">শুধু সবুজ</option>
+        </select>
+        <input type="date" id="filt-from" onchange="renderList()">
+        <input type="date" id="filt-to" onchange="renderList()">
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th></th><th>তারিখ</th><th>#</th><th>Client</th><th>Storey</th><th>Location</th><th>Engineer</th><th>Struct.</th><th>Arch.</th><th>Elec.</th><th>Plumb.</th><th></th></tr></thead>
+          <tbody id="list-table-body"></tbody>
+        </table>
+        <div class="empty" id="list-empty" style="display:none;">কোনো ফলাফল পাওয়া যায়নি।</div>
+      </div>
+    </div>
+
+    <!-- ---------- STATISTICS ---------- -->
+    <div id="view-stats" style="display:none;">
+      <div class="topbar">
+        <div><h2>পরিসংখ্যান</h2><div class="sub" id="stats-sub">STATISTICS</div></div>
+        <div class="year-picker">
+          <select id="year-select-stats" onchange="renderStats()"></select>
+        </div>
+      </div>
+      <div class="grid-cards" id="stats-summary"></div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>মাসভিত্তিক প্রজেক্ট সংখ্যা</h3><canvas id="chart-month" height="240"></canvas></div>
+        <div class="chart-box"><h3>Storey অনুযায়ী বিভাজন</h3><canvas id="chart-storey" height="240"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>Location অনুযায়ী বিভাজন</h3><canvas id="chart-location" height="240"></canvas></div>
+        <div class="chart-box"><h3>Structural Status বিভাজন</h3><canvas id="chart-status" height="240"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ---------- BACKUP ---------- -->
+    <div id="view-backup" style="display:none;">
+      <div class="topbar"><div><h2>ব্যাকআপ ও ডেটা</h2><div class="sub">GOOGLE DRIVE AUTO-SAVE / EXPORT / IMPORT</div></div></div>
+
+      <div class="card" style="margin-bottom:14px; border-color:var(--accent);">
+        <h3 style="margin-top:0;font-family:var(--display);color:var(--accent);">Google Drive Auto-Save</h3>
+        <p style="color:var(--dim);font-size:13px;line-height:1.6;">
+          একবার Connect করলে প্রতিটা Save/Delete-এর সাথে সাথেই ডেটা আপনার নিজের Google Drive-এ automatic সেভ হয়ে যাবে —
+          আর বার বার JSON Export/Import করতে হবে না। প্রথমবার ব্যবহারের আগে নিচের এক-বারের সেটআপ করতে হবে
+          (চ্যাটে বিস্তারিত ধাপ দেওয়া আছে)।
+        </p>
+        <button class="btn" onclick="connectDrive()" style="width:auto;padding:10px 20px;">Connect Google Drive</button>
+        <button class="btn btn-ghost" onclick="loadFromDrive()" style="width:auto;padding:10px 20px;margin-left:8px;">Drive থেকে Load করুন</button>
+        <div id="drive-status" style="margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--dim);">সংযুক্ত নয়</div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <b style="color:var(--accent);">Fallback (Drive সংযুক্ত না থাকলে)ঃ</b>
+        <p style="color:var(--dim);font-size:13px;line-height:1.6;">
+          এই টুলটি ব্রাউজারে কোনো স্থায়ী স্টোরেজ ব্যবহার করে না। Google Drive সংযুক্ত না থাকলে ট্যাব বন্ধ করলে ডেটা মুছে যাবে —
+          তাই সেক্ষেত্রে কাজ শেষে <b>"Export Data"</b> চেপে .json ব্যাকআপ রাখুন, পরে <b>"Import Data"</b> দিয়ে ফেরত আনুন।
+        </p>
+      </div>
+      <div class="backup-box">
+        <div class="card">
+          <h3 style="margin-top:0;font-family:var(--display);">Export Data</h3>
+          <p style="color:var(--dim);font-size:13px;">বর্তমান সব প্রজেক্ট ডেটা .json ফাইল হিসেবে ডাউনলোড করুন।</p>
+          <button class="btn" onclick="exportData()">Export Data (.json)</button>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;font-family:var(--display);">Import Data</h3>
+          <p style="color:var(--dim);font-size:13px;">আগে সংরক্ষণ করা .json ফাইল লোড করুন।</p>
+          <input type="file" id="import-file" accept=".json" style="margin-bottom:12px;width:100%;">
+          <button class="btn btn-ghost" onclick="importData()">Import Data</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ---------- VIEW / EDIT MODAL ---------- -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-head"><h3>প্রজেক্ট বিবরণ</h3><button class="close-x" onclick="closeModal()">✕</button></div>
+    <div id="modal-body"></div>
+    <div class="actions-row">
+      <button class="btn btn-ghost btn-sm" onclick="deleteFromModal()">Delete</button>
+      <button class="btn btn-sm" style="width:auto;" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const PASSWORD = "Av@sh1972";
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* ---- GOOGLE DRIVE CONFIG ----
+   নিজের Google Cloud OAuth Client ID এখানে বসান (চ্যাটে ধাপে ধাপে গাইড দেওয়া আছে)।
+   এই HTML ফাইলটি অবশ্যই http/https থেকে খুলতে হবে (file:// থেকে Google OAuth কাজ করে না)। */
+const GOOGLE_CLIENT_ID = "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com";
+const DRIVE_FILE_NAME = "project-tracker-data.json";
+const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+
+/* ================= STATE (in-memory only, no browser storage) ================= */
+// project: {id,date,pnum,pname,storey,location,employee,received,submission,soiltest,soiltestDate,plan,d3date,planissues,
+//   structural:{doneBy,status,received,completed}, architectural:{...}, electrical:{...}, plumbing:{...},
+//   remarks, flag:{color,note,image}}
+let projects = [];
+let years = [new Date().getFullYear(), new Date().getFullYear()+1];
+let currentDashYear = new Date().getFullYear();
+let currentStatsYear = new Date().getFullYear();
+let currentModalId = null;
+let chartMonth, chartStorey, chartLocation, chartStatus;
+let flagColor = 'green';
+let flagImageData = '';
+const DISCIPLINES = ['structural','architectural','electrical','plumbing'];
+
+/* ---- Google Drive state ---- */
+let gTokenClient = null;
+let gAccessToken = null;
+let gDriveFileId = null;
+let gAutoSaveTimer = null;
+let gLastSavedAt = null;
+
+/* ================= LOGIN ================= */
+function tryLogin(){
+  const val = document.getElementById('pw-input').value;
+  if(val === PASSWORD){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    initApp();
+  } else {
+    document.getElementById('login-err').textContent = 'পাসওয়ার্ড সঠিক নয়।';
+  }
+}
+document.getElementById('pw-input').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pw-input').value='';
+  document.getElementById('login-err').textContent='';
+}
+
+/* ================= INIT ================= */
+function initApp(){
+  populateYearSelects();
+  switchView('dashboard');
+}
+
+function populateYearSelects(){
+  years = [...new Set(years)].sort((a,b)=>a-b);
+  const dash = document.getElementById('year-select-dash');
+  const stats = document.getElementById('year-select-stats');
+  dash.innerHTML = years.map(y=>`<option value="${y}" ${y===currentDashYear?'selected':''}>${y}</option>`).join('');
+  stats.innerHTML = years.map(y=>`<option value="${y}" ${y===currentStatsYear?'selected':''}>${y}</option>`).join('');
+}
+function addYear(){
+  const y = prompt('কোন বছর যোগ করবেন? (যেমনঃ 2027)');
+  if(!y || isNaN(parseInt(y))) return;
+  years.push(parseInt(y));
+  populateYearSelects();
+  currentDashYear = parseInt(y);
+  document.getElementById('year-select-dash').value = currentDashYear;
+  renderDashboard();
+}
+function changeYear(delta){
+  let idx = years.indexOf(currentDashYear);
+  idx = Math.min(Math.max(idx+delta,0), years.length-1);
+  currentDashYear = years[idx];
+  document.getElementById('year-select-dash').value = currentDashYear;
+  renderDashboard();
+}
+function onDashYearChange(){
+  currentDashYear = parseInt(document.getElementById('year-select-dash').value);
+  renderDashboard();
+}
+
+/* ================= NAV ================= */
+function switchView(view){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', backup:'backup'};
+  if(navMap[view]) document.querySelector(`.nav-item[data-view="${navMap[view]}"]`)?.classList.add('active');
+  ['dashboard','month','add','list','stats','backup'].forEach(v=>{
+    document.getElementById('view-'+v).style.display = (v===view)?'block':'none';
+  });
+  if(view==='dashboard') renderDashboard();
+  if(view==='list') renderList();
+  if(view==='stats') renderStats();
+  if(view==='add') resetForm();
+}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  document.getElementById('dash-year-label').textContent = currentDashYear;
+  document.getElementById('dash-sub').textContent = 'YEAR OVERVIEW — ' + currentDashYear;
+  const yearProjects = projects.filter(p=>new Date(p.date).getFullYear()===currentDashYear);
+
+  const doneCount = p => DISCIPLINES.every(k=>p[k] && p[k].status==='Done');
+  const cards = [
+    {num: yearProjects.length, label: `মোট প্রজেক্ট (${currentDashYear})`},
+    {num: projects.length, label: 'সর্বমোট প্রজেক্ট (সব বছর)'},
+    {num: yearProjects.filter(doneCount).length, label: 'সম্পূর্ণ (Done)'},
+    {num: yearProjects.filter(p=>!doneCount(p)).length, label: 'চলমান'},
+  ];
+  document.getElementById('stat-cards').innerHTML = cards.map(c=>`
+    <div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>
+  `).join('');
+
+  document.getElementById('month-grid').innerHTML = MONTHS.map((m,i)=>{
+    const count = yearProjects.filter(p=>new Date(p.date).getMonth()===i).length;
+    return `<div class="month-card" onclick="openMonth(${i})">
+      <div class="m-name">${m}</div>
+      <div class="m-count">${count}</div>
+      <div class="m-label">প্রজেক্ট</div>
+    </div>`;
+  }).join('');
+}
+
+function openMonth(monthIdx){
+  switchView('month');
+  document.getElementById('month-title').textContent = MONTHS[monthIdx] + ' ' + currentDashYear;
+  const rows = projects.filter(p=>{
+    const d = new Date(p.date);
+    return d.getFullYear()===currentDashYear && d.getMonth()===monthIdx;
+  }).sort((a,b)=> new Date(a.date)-new Date(b.date));
+
+  document.getElementById('month-empty').style.display = rows.length? 'none':'block';
+  document.getElementById('month-table-body').innerHTML = rows.map(p=>{
+    const flagColorVal = p.flag ? p.flag.color : 'green';
+    return `
+    <tr>
+      <td><span class="status-dot ${flagColorVal}"></span>${fmtDate(p.date)}</td>
+      <td>${esc(p.pnum)}</td>
+      <td>${esc(p.pname)}</td>
+      <td>${esc(p.storey)}</td>
+      <td>${esc(p.location)}</td>
+      <td>${statusBadge(overallStatus(p))}</td>
+      <td class="action-icons"><span onclick="openModal('${p.id}')">দেখুন</span></td>
+    </tr>
+  `;}).join('');
+}
+
+/* ================= ADD / EDIT FORM ================= */
+function resetForm(){
+  document.getElementById('add-title').textContent = 'নতুন প্রজেক্ট যোগ করুন';
+  ['f-date','f-pnum','f-pname','f-storey','f-location','f-employee','f-received','f-submission',
+   'f-soiltest','f-soiltest-date','f-plan','f-3d-date','f-planissues','f-remarks','f-flag-note'].forEach(id=>{
+    document.getElementById(id).value = '';
+  });
+  DISCIPLINES.forEach(k=>{
+    document.getElementById(`f-${k}-doneby`).value = '';
+    document.getElementById(`f-${k}-status`).value = 'Not Started';
+    document.getElementById(`f-${k}-received`).value = '';
+    document.getElementById(`f-${k}-completed`).value = '';
+  });
+  document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('f-flag-image').value = '';
+  flagColor = 'green';
+  flagImageData = '';
+  updateFlagLightUI();
+  document.getElementById('flag-image-preview').style.display = 'none';
+  document.getElementById('flag-image-remove').style.display = 'none';
+  editingId = null;
+}
+let editingId = null;
+
+function toggleFlag(){
+  flagColor = flagColor === 'green' ? 'red' : 'green';
+  updateFlagLightUI();
+}
+function updateFlagLightUI(){
+  const el = document.getElementById('flag-light');
+  el.classList.remove('green','red');
+  el.classList.add(flagColor);
+}
+function previewFlagImage(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    flagImageData = ev.target.result;
+    const img = document.getElementById('flag-image-preview');
+    img.src = flagImageData;
+    img.style.display = 'block';
+    document.getElementById('flag-image-remove').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeFlagImage(){
+  flagImageData = '';
+  document.getElementById('f-flag-image').value = '';
+  document.getElementById('flag-image-preview').style.display = 'none';
+  document.getElementById('flag-image-remove').style.display = 'none';
+}
+function getDiscipline(key){
+  return {
+    doneBy: document.getElementById(`f-${key}-doneby`).value.trim(),
+    status: document.getElementById(`f-${key}-status`).value,
+    received: document.getElementById(`f-${key}-received`).value,
+    completed: document.getElementById(`f-${key}-completed`).value,
+  };
+}
+
+function saveProject(){
+  const date = document.getElementById('f-date').value;
+  const pname = document.getElementById('f-pname').value.trim();
+  if(!date || !pname){ alert('তারিখ এবং Project Name/Client অবশ্যই দিতে হবে।'); return; }
+
+  const obj = {
+    id: editingId || ('p_'+Date.now()+Math.random().toString(36).slice(2,7)),
+    date,
+    pnum: document.getElementById('f-pnum').value.trim(),
+    pname,
+    storey: document.getElementById('f-storey').value.trim(),
+    location: document.getElementById('f-location').value.trim(),
+    employee: document.getElementById('f-employee').value.trim(),
+    received: document.getElementById('f-received').value,
+    submission: document.getElementById('f-submission').value,
+    soiltest: document.getElementById('f-soiltest').value.trim(),
+    soiltestDate: document.getElementById('f-soiltest-date').value,
+    plan: document.getElementById('f-plan').value.trim(),
+    d3date: document.getElementById('f-3d-date').value,
+    planissues: document.getElementById('f-planissues').value.trim(),
+    structural: getDiscipline('structural'),
+    architectural: getDiscipline('architectural'),
+    electrical: getDiscipline('electrical'),
+    plumbing: getDiscipline('plumbing'),
+    remarks: document.getElementById('f-remarks').value.trim(),
+    flag: {
+      color: flagColor,
+      note: document.getElementById('f-flag-note').value.trim(),
+      image: flagImageData,
+    },
+  };
+
+  const y = new Date(date).getFullYear();
+  if(!years.includes(y)){ years.push(y); populateYearSelects(); }
+
+  if(editingId){
+    const idx = projects.findIndex(p=>p.id===editingId);
+    if(idx>-1) projects[idx] = obj;
+  } else {
+    projects.push(obj);
+  }
+  resetForm();
+  switchView('dashboard');
+  scheduleAutoSave();
+}
+
+function editProject(id){
+  const p = projects.find(x=>x.id===id);
+  if(!p) return;
+  editingId = id;
+  document.getElementById('add-title').textContent = 'প্রজেক্ট সম্পাদনা করুন';
+  document.getElementById('f-date').value = p.date;
+  document.getElementById('f-pnum').value = p.pnum;
+  document.getElementById('f-pname').value = p.pname;
+  document.getElementById('f-storey').value = p.storey;
+  document.getElementById('f-location').value = p.location;
+  document.getElementById('f-employee').value = p.employee;
+  document.getElementById('f-received').value = p.received;
+  document.getElementById('f-submission').value = p.submission;
+  document.getElementById('f-soiltest').value = p.soiltest;
+  document.getElementById('f-soiltest-date').value = p.soiltestDate;
+  document.getElementById('f-plan').value = p.plan;
+  document.getElementById('f-3d-date').value = p.d3date;
+  document.getElementById('f-planissues').value = p.planissues;
+  DISCIPLINES.forEach(k=>{
+    const d = p[k] || {};
+    document.getElementById(`f-${k}-doneby`).value = d.doneBy || '';
+    document.getElementById(`f-${k}-status`).value = d.status || 'Not Started';
+    document.getElementById(`f-${k}-received`).value = d.received || '';
+    document.getElementById(`f-${k}-completed`).value = d.completed || '';
+  });
+  document.getElementById('f-remarks').value = p.remarks;
+
+  const flag = p.flag || {color:'green', note:'', image:''};
+  flagColor = flag.color || 'green';
+  flagImageData = flag.image || '';
+  document.getElementById('f-flag-note').value = flag.note || '';
+  updateFlagLightUI();
+  const img = document.getElementById('flag-image-preview');
+  const removeBtn = document.getElementById('flag-image-remove');
+  if(flagImageData){ img.src = flagImageData; img.style.display='block'; removeBtn.style.display='inline-block'; }
+  else { img.style.display='none'; removeBtn.style.display='none'; }
+
+  switchView('add');
+}
+
+function deleteProject(id){
+  if(!confirm('আপনি কি নিশ্চিত এই প্রজেক্টটি মুছে ফেলতে চান?')) return;
+  projects = projects.filter(p=>p.id!==id);
+  closeModal();
+  renderDashboard(); renderList();
+  scheduleAutoSave();
+}
+
+/* ================= LIST / SEARCH ================= */
+function renderList(){
+  const name = document.getElementById('filt-name').value.toLowerCase();
+  const loc = document.getElementById('filt-location').value.toLowerCase();
+  const storey = document.getElementById('filt-storey').value.toLowerCase();
+  const status = document.getElementById('filt-status').value;
+  const flagFilter = document.getElementById('filt-flag').value;
+  const from = document.getElementById('filt-from').value;
+  const to = document.getElementById('filt-to').value;
+
+  let rows = projects.filter(p=>{
+    if(name && !p.pname.toLowerCase().includes(name)) return false;
+    if(loc && !p.location.toLowerCase().includes(loc)) return false;
+    if(storey && !p.storey.toLowerCase().includes(storey)) return false;
+    if(status && !DISCIPLINES.some(k=>p[k] && p[k].status===status)) return false;
+    if(flagFilter && (!p.flag || p.flag.color !== flagFilter)) return false;
+    if(from && p.date < from) return false;
+    if(to && p.date > to) return false;
+    return true;
+  }).sort((a,b)=> new Date(b.date)-new Date(a.date));
+
+  document.getElementById('list-empty').style.display = rows.length? 'none':'block';
+  document.getElementById('list-table-body').innerHTML = rows.map(p=>{
+    const flagColorVal = p.flag ? p.flag.color : 'green';
+    return `
+    <tr>
+      <td><span class="status-dot ${flagColorVal}" title="${flagColorVal==='red'?'সতর্কতা সংকেত':'স্বাভাবিক'}"></span></td>
+      <td>${fmtDate(p.date)}</td>
+      <td>${esc(p.pnum)}</td>
+      <td>${esc(p.pname)}</td>
+      <td>${esc(p.storey)}</td>
+      <td>${esc(p.location)}</td>
+      <td>${esc(p.employee)}</td>
+      <td>${statusBadge(p.structural.status)}</td>
+      <td>${statusBadge(p.architectural.status)}</td>
+      <td>${statusBadge(p.electrical.status)}</td>
+      <td>${statusBadge(p.plumbing.status)}</td>
+      <td class="action-icons">
+        <span onclick="editProject('${p.id}')">Edit</span>
+        <span onclick="deleteProject('${p.id}')">Del</span>
+      </td>
+    </tr>
+  `;}).join('');
+}
+
+/* ================= MODAL (view detail) ================= */
+function openModal(id){
+  currentModalId = id;
+  const p = projects.find(x=>x.id===id);
+  if(!p) return;
+  const flag = p.flag || {color:'green', note:'', image:''};
+  const discRow = (label,key)=>{
+    const d = p[key] || {};
+    return `<tr>
+      <td class="disc-name">${label}</td>
+      <td>${esc(d.doneBy)||'-'}</td>
+      <td>${statusBadge(d.status)}</td>
+      <td>${fmtDate(d.received)}</td>
+      <td>${fmtDate(d.completed)}</td>
+    </tr>`;
+  };
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-grid">
+      <div class="field"><label>তারিখ</label><div>${fmtDate(p.date)}</div></div>
+      <div class="field"><label>Project Number</label><div>${esc(p.pnum)||'-'}</div></div>
+      <div class="field"><label>Project Name</label><div>${esc(p.pname)}</div></div>
+      <div class="field"><label>Storey</label><div>${esc(p.storey)||'-'}</div></div>
+      <div class="field"><label>Location</label><div>${esc(p.location)||'-'}</div></div>
+      <div class="field"><label>Employee</label><div>${esc(p.employee)||'-'}</div></div>
+      <div class="field"><label>Received</label><div>${fmtDate(p.received)}</div></div>
+      <div class="field"><label>Submission</label><div>${fmtDate(p.submission)}</div></div>
+      <div class="field"><label>Soil Test</label><div>${esc(p.soiltest)||'-'}</div></div>
+      <div class="field"><label>Soil Test Date</label><div>${fmtDate(p.soiltestDate)}</div></div>
+      <div class="field"><label>Plan</label><div>${esc(p.plan)||'-'}</div></div>
+      <div class="field"><label>3D Receive Date</label><div>${fmtDate(p.d3date)}</div></div>
+      <div class="field full"><label>Plan Issues</label><div>${esc(p.planissues)||'-'}</div></div>
+    </div>
+    <div class="section-title">কাজের অবস্থা</div>
+    <table class="discipline-table">
+      <thead><tr><th></th><th>Done By</th><th>Status</th><th>Receive Date</th><th>Completion Date</th></tr></thead>
+      <tbody>
+        ${discRow('Structural','structural')}
+        ${discRow('Architectural','architectural')}
+        ${discRow('Electrical','electrical')}
+        ${discRow('Plumbing','plumbing')}
+      </tbody>
+    </table>
+    <div class="section-title">Remarks</div>
+    <div class="remark-preview">${esc(p.remarks)||'কোনো মন্তব্য নেই।'}</div>
+    <div class="section-title">সতর্কতা সংকেত</div>
+    <div class="flag-box">
+      <div class="light-toggle ${flag.color}" title="${flag.color==='red'?'সতর্কতা':'স্বাভাবিক'}"></div>
+      <div class="flag-fields">
+        <div class="remark-preview">${esc(flag.note)||'কোনো মন্তব্য নেই।'}</div>
+        ${flag.image ? `<img src="${flag.image}" style="max-width:220px;border-radius:5px;border:1px solid var(--border);">` : ''}
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost btn-sm" onclick="editProject('${p.id}')">Edit করুন</button>
+    </div>
+  `;
+  document.getElementById('modal-bg').style.display='flex';
+}
+function closeModal(){ document.getElementById('modal-bg').style.display='none'; currentModalId=null; }
+function deleteFromModal(){ if(currentModalId) deleteProject(currentModalId); }
+
+/* ================= STATISTICS ================= */
+function renderStats(){
+  currentStatsYear = parseInt(document.getElementById('year-select-stats').value) || currentDashYear;
+  document.getElementById('stats-sub').textContent = 'STATISTICS — ' + currentStatsYear;
+  const yearProjects = projects.filter(p=>new Date(p.date).getFullYear()===currentStatsYear);
+
+  const doneCount = p => DISCIPLINES.every(k=>p[k] && p[k].status==='Done');
+  document.getElementById('stats-summary').innerHTML = [
+    {num: yearProjects.length, label:`মোট প্রজেক্ট (${currentStatsYear})`},
+    {num: new Set(yearProjects.map(p=>p.location).filter(Boolean)).size, label:'ভিন্ন Location'},
+    {num: yearProjects.filter(doneCount).length, label:'সম্পূর্ণ প্রজেক্ট'},
+    {num: yearProjects.length? Math.round(yearProjects.filter(doneCount).length/yearProjects.length*100)+'%':'0%', label:'Completion Rate'},
+  ].map(c=>`<div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
+
+  const monthCounts = MONTHS.map((m,i)=>yearProjects.filter(p=>new Date(p.date).getMonth()===i).length);
+  const chartColors = ['#f2994a','#4fc38a','#56a2c2','#e2574c','#f2c94a','#9b6ef2','#f27ab0','#6ee7b7'];
+
+  const storeyMap = {}; yearProjects.forEach(p=>{ const k=p.storey||'Unspecified'; storeyMap[k]=(storeyMap[k]||0)+1; });
+  const locMap = {}; yearProjects.forEach(p=>{ const k=p.location||'Unspecified'; locMap[k]=(locMap[k]||0)+1; });
+  const statusMap = {'Not Started':0,'In Progress':0,'Pending':0,'Done':0};
+  yearProjects.forEach(p=>{ const s=(p.structural&&p.structural.status)||'Not Started'; statusMap[s] = (statusMap[s]||0)+1; });
+
+  const gridColor = 'rgba(120,170,210,0.12)';
+  const textColor = '#8fadc4';
+  Chart.defaults.color = textColor;
+  Chart.defaults.borderColor = gridColor;
+
+  if(chartMonth) chartMonth.destroy();
+  chartMonth = new Chart(document.getElementById('chart-month'), {
+    type:'bar',
+    data:{labels:MONTHS.map(m=>m.slice(0,3)), datasets:[{label:'প্রজেক্ট', data:monthCounts, backgroundColor:'#f2994a', borderRadius:4}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{precision:0}}}}
+  });
+
+  if(chartStorey) chartStorey.destroy();
+  chartStorey = new Chart(document.getElementById('chart-storey'), {
+    type:'doughnut',
+    data:{labels:Object.keys(storeyMap), datasets:[{data:Object.values(storeyMap), backgroundColor:chartColors}]},
+    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
+  });
+
+  if(chartLocation) chartLocation.destroy();
+  chartLocation = new Chart(document.getElementById('chart-location'), {
+    type:'pie',
+    data:{labels:Object.keys(locMap), datasets:[{data:Object.values(locMap), backgroundColor:chartColors}]},
+    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
+  });
+
+  if(chartStatus) chartStatus.destroy();
+  chartStatus = new Chart(document.getElementById('chart-status'), {
+    type:'doughnut',
+    data:{labels:Object.keys(statusMap), datasets:[{data:Object.values(statusMap), backgroundColor:['#e2574c','#f2c94a','#8fadc4','#4fc38a']}]},
+    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+/* ================= GOOGLE DRIVE (auto-save) ================= */
+function initGoogleClient(){
+  if(!window.google || !google.accounts) return; // script not loaded yet
+  gTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: DRIVE_SCOPE,
+    callback: async (resp)=>{
+      if(resp.error){
+        setDriveStatus('সংযোগ ব্যর্থ হয়েছে — Client ID / Authorized Origin ঠিক আছে কিনা দেখুন।', false);
+        return;
+      }
+      gAccessToken = resp.access_token;
+      setDriveStatus('সংযুক্ত হয়েছে — ফাইল খোঁজা হচ্ছে...', true);
+      await findOrCreateDriveFile();
+    }
+  });
+}
+function connectDrive(){
+  if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('PASTE_YOUR_GOOGLE_CLIENT_ID')){
+    alert('প্রথমে HTML ফাইলের ভিতরে GOOGLE_CLIENT_ID বসাতে হবে (নিজের Google Cloud Console থেকে নিন), এবং ফাইলটি http/https থেকে খুলতে হবে।');
+    return;
+  }
+  if(!window.google || !google.accounts){
+    alert('Google লগইন স্ক্রিপ্ট এখনও লোড হয়নি, কয়েক সেকেন্ড পর আবার চেষ্টা করুন। (ইন্টারনেট সংযোগ যাচাই করুন)');
+    return;
+  }
+  if(!gTokenClient) initGoogleClient();
+  gTokenClient.requestAccessToken();
+}
+function setDriveStatus(msg, connected){
+  const full = document.getElementById('drive-status');
+  const mini = document.getElementById('drive-status-mini');
+  if(full){ full.textContent = msg; full.style.color = connected ? 'var(--ok)' : 'var(--dim)'; }
+  if(mini){ mini.textContent = 'Drive: ' + (connected ? 'সংযুক্ত' : 'সংযুক্ত নয়'); mini.style.color = connected ? 'var(--ok)' : 'var(--dim)'; }
+}
+async function findOrCreateDriveFile(){
+  try{
+    const q = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false`);
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, {
+      headers:{ Authorization: 'Bearer ' + gAccessToken }
+    });
+    const data = await res.json();
+    if(data.files && data.files.length){
+      gDriveFileId = data.files[0].id;
+      await loadFromDrive();
+    } else {
+      await createDriveFile();
+    }
+    setDriveStatus('সংযুক্ত — সবশেষ সেভঃ ' + (gLastSavedAt ? gLastSavedAt.toLocaleTimeString('en-GB') : 'এখনো হয়নি'), true);
+  }catch(err){
+    setDriveStatus('Drive-এ ফাইল খুঁজতে সমস্যা হয়েছে।', false);
+  }
+}
+async function createDriveFile(){
+  const metadata = {name: DRIVE_FILE_NAME, mimeType:'application/json'};
+  const payload = JSON.stringify({years, projects, savedAt:new Date().toISOString()});
+  const boundary = '-------pt' + Date.now();
+  const body =
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
+    `--${boundary}\r\nContent-Type: application/json\r\n\r\n${payload}\r\n--${boundary}--`;
+  const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+    method:'POST',
+    headers:{ Authorization:'Bearer '+gAccessToken, 'Content-Type': `multipart/related; boundary=${boundary}` },
+    body
+  });
+  const data = await res.json();
+  gDriveFileId = data.id;
+  gLastSavedAt = new Date();
+}
+async function loadFromDrive(){
+  if(!gAccessToken){ alert('প্রথমে Google Drive Connect করুন।'); return; }
+  if(!gDriveFileId){ await findOrCreateDriveFile(); return; }
+  try{
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${gDriveFileId}?alt=media`, {
+      headers:{ Authorization:'Bearer '+gAccessToken }
+    });
+    if(res.ok){
+      const text = await res.text();
+      if(text.trim()){
+        const data = JSON.parse(text);
+        projects = data.projects || [];
+        years = (data.years && data.years.length) ? data.years : years;
+        populateYearSelects();
+        switchView('dashboard');
+      }
+    }
+  }catch(err){ /* file empty or invalid — ignore, keep current in-memory data */ }
+}
+async function saveToDrive(){
+  if(!gAccessToken || !gDriveFileId) return;
+  try{
+    const payload = JSON.stringify({years, projects, savedAt:new Date().toISOString()});
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gDriveFileId}?uploadType=media`, {
+      method:'PATCH',
+      headers:{ Authorization:'Bearer '+gAccessToken, 'Content-Type':'application/json' },
+      body: payload
+    });
+    gLastSavedAt = new Date();
+    setDriveStatus('সংযুক্ত — সবশেষ সেভঃ ' + gLastSavedAt.toLocaleTimeString('en-GB'), true);
+  }catch(err){
+    setDriveStatus('সেভ করতে সমস্যা হয়েছে, পরে আবার চেষ্টা হবে।', true);
+  }
+}
+function scheduleAutoSave(){
+  if(!gAccessToken) return; // Drive সংযুক্ত না থাকলে auto-save স্কিপ হবে, Export/Import ব্যবহার করতে হবে
+  clearTimeout(gAutoSaveTimer);
+  gAutoSaveTimer = setTimeout(saveToDrive, 1200);
+}
+window.addEventListener('load', ()=> setTimeout(initGoogleClient, 400));
+
+/* ================= BACKUP ================= */
+function exportData(){
+  const payload = { years, projects, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `project-tracker-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(){
+  const file = document.getElementById('import-file').files[0];
+  if(!file){ alert('একটি .json ফাইল সিলেক্ট করুন।'); return; }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data.projects)) throw new Error('invalid');
+      projects = data.projects;
+      years = data.years && data.years.length ? data.years : years;
+      populateYearSelects();
+      alert('ডেটা সফলভাবে লোড হয়েছে।');
+      switchView('dashboard');
+      scheduleAutoSave();
+    }catch(err){
+      alert('ফাইলটি সঠিক ফরম্যাটে নেই।');
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= HELPERS ================= */
+function fmtDate(d){
+  if(!d) return '-';
+  const dt = new Date(d);
+  if(isNaN(dt)) return '-';
+  return dt.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+}
+function esc(s){
+  if(s===undefined||s===null) return '';
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function statusBadge(s){
+  const cls = s==='Done'?'done': s==='In Progress'?'progress': s==='Pending'?'pending': 'notstarted';
+  return `<span class="badge ${cls}">${s||'-'}</span>`;
+}
+function overallStatus(p){
+  const vals = DISCIPLINES.map(k=> (p[k] && p[k].status) || 'Not Started');
+  if(vals.every(v=>v==='Done')) return 'Done';
+  if(vals.some(v=>v==='In Progress')) return 'In Progress';
+  if(vals.some(v=>v==='Pending')) return 'Pending';
+  return 'Not Started';
+}
+</script>
+</body>
+</html>
