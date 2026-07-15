@@ -696,7 +696,8 @@ function onDashYearChange(){
 }
 
 /* ================= NAV ================= */
-function switchView(view){
+function switchView(view, opts){
+  opts = opts || {};
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', backup:'backup'};
   if(navMap[view]) document.querySelector(`.nav-item[data-view="${navMap[view]}"]`)?.classList.add('active');
@@ -706,7 +707,7 @@ function switchView(view){
   if(view==='dashboard') renderDashboard();
   if(view==='list') renderList();
   if(view==='stats') renderStats();
-  if(view==='add') resetForm();
+  if(view==='add' && !opts.skipReset) resetForm();
 }
 
 /* ================= DASHBOARD ================= */
@@ -904,7 +905,7 @@ function editProject(id){
   if(flagImageData){ img.src = flagImageData; img.style.display='block'; removeBtn.style.display='inline-block'; }
   else { img.style.display='none'; removeBtn.style.display='none'; }
 
-  switchView('add');
+  switchView('add', {skipReset:true});
 }
 
 function deleteProject(id){
