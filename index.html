@@ -281,8 +281,13 @@ select.status-select option{background:var(--panel);}
     <div class="nav-item" data-view="add" onclick="switchView('add')"><span class="nav-num">02</span> নতুন প্রজেক্ট</div>
     <div class="nav-item" data-view="list" onclick="switchView('list')"><span class="nav-num">03</span> সব প্রজেক্ট</div>
     <div class="nav-item" data-view="stats" onclick="switchView('stats')"><span class="nav-num">04</span> পরিসংখ্যান</div>
-    <div class="nav-item" data-view="backup" onclick="switchView('backup')"><span class="nav-num">05</span> ব্যাকআপ</div>
+    <div class="nav-item" data-view="time" onclick="switchView('time')"><span class="nav-num">05</span> সময় বিশ্লেষণ</div>
+    <div class="nav-item" data-view="backup" onclick="switchView('backup')"><span class="nav-num">06</span> ব্যাকআপ</div>
     <div class="sidebar-foot">
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:11px;color:var(--dim);font-family:var(--mono);margin-bottom:5px;">থিম (Theme)</label>
+        <select id="theme-select" onchange="applyTheme(this.value)" style="width:100%;padding:7px 8px;font-size:11.5px;"></select>
+      </div>
       <span id="drive-status-mini" style="color:var(--dim);">Drive: সংযুক্ত নয়</span><br><br>
       কাজ শেষে <b style="color:var(--accent)">Export</b> করে সংরক্ষণ করুন (Drive সংযুক্ত না থাকলে)।<br><br>
       <span class="logout-link" onclick="logout()">লগ-আউট</span>
@@ -355,35 +360,35 @@ select.status-select option{background:var(--panel);}
         <div class="section-title">কাজের অবস্থা (কে করেছে, কবে রিসিভ করেছে, কবে শেষ করেছে)</div>
         <div class="table-scroll">
         <table class="discipline-table">
-          <thead><tr><th></th><th>Done By</th><th>Status</th><th>Receive Date</th><th>Completion Date</th></tr></thead>
+          <thead><tr><th></th><th>Done By</th><th>Status</th><th>Start (Date &amp; Time)</th><th>End (Date &amp; Time)</th></tr></thead>
           <tbody>
             <tr>
               <td class="disc-name">Structural</td>
               <td><input type="text" id="f-structural-doneby" placeholder="নাম"></td>
               <td><select id="f-structural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="date" id="f-structural-received"></td>
-              <td><input type="date" id="f-structural-completed"></td>
+              <td><input type="datetime-local" id="f-structural-received"></td>
+              <td><input type="datetime-local" id="f-structural-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Architectural</td>
               <td><input type="text" id="f-architectural-doneby" placeholder="নাম"></td>
               <td><select id="f-architectural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="date" id="f-architectural-received"></td>
-              <td><input type="date" id="f-architectural-completed"></td>
+              <td><input type="datetime-local" id="f-architectural-received"></td>
+              <td><input type="datetime-local" id="f-architectural-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Electrical</td>
               <td><input type="text" id="f-electrical-doneby" placeholder="নাম"></td>
               <td><select id="f-electrical-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="date" id="f-electrical-received"></td>
-              <td><input type="date" id="f-electrical-completed"></td>
+              <td><input type="datetime-local" id="f-electrical-received"></td>
+              <td><input type="datetime-local" id="f-electrical-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Plumbing</td>
               <td><input type="text" id="f-plumbing-doneby" placeholder="নাম"></td>
               <td><select id="f-plumbing-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="date" id="f-plumbing-received"></td>
-              <td><input type="date" id="f-plumbing-completed"></td>
+              <td><input type="datetime-local" id="f-plumbing-received"></td>
+              <td><input type="datetime-local" id="f-plumbing-completed"></td>
             </tr>
           </tbody>
         </table>
@@ -465,6 +470,31 @@ select.status-select option{background:var(--panel);}
       </div>
     </div>
 
+    <!-- ---------- TIME ANALYSIS ---------- -->
+    <div id="view-time" style="display:none;">
+      <div class="topbar">
+        <div><h2>সময় বিশ্লেষণ</h2><div class="sub" id="time-sub">TIME ANALYSIS</div></div>
+        <div class="year-picker">
+          <input type="number" id="year-select-time" class="year-input" step="1" onchange="renderTimeAnalysis()">
+        </div>
+      </div>
+      <div class="grid-cards" id="time-summary"></div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>প্রজেক্ট অনুযায়ী মোট সময় (ঘন্টা)</h3><canvas id="chart-time-project" height="240"></canvas></div>
+        <div class="chart-box"><h3>ব্যক্তি অনুযায়ী মোট সময় (ঘন্টা)</h3><canvas id="chart-time-person" height="240"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0;">বিস্তারিত সময়ের তালিকা</div>
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>প্রজেক্ট</th><th>Discipline</th><th>ব্যক্তি</th><th>Start</th><th>End</th><th>সময় লেগেছে</th></tr></thead>
+          <tbody id="time-table-body"></tbody>
+        </table>
+        </div>
+        <div class="empty" id="time-empty" style="display:none;">এই বছরের কোনো সময়ের তথ্য পাওয়া যায়নি — Start/End Date &amp; Time পূরণ করুন।</div>
+      </div>
+    </div>
+
     <!-- ---------- BACKUP ---------- -->
     <div id="view-backup" style="display:none;">
       <div class="topbar"><div><h2>ব্যাকআপ ও ডেটা</h2><div class="sub">GOOGLE DRIVE AUTO-SAVE / EXPORT / IMPORT</div></div></div>
@@ -524,6 +554,88 @@ select.status-select option{background:var(--panel);}
 const PASSWORD = "Av@sh1972";
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+/* ================= THEMES ================= */
+const THEMES = {
+  "blueprint": { label:"Blueprint Navy (ডিফল্ট)",
+    bg:"#0c1a26", bg2:"#0f2033", panel:"#122a3f", panel2:"#173754", grid:"rgba(120,170,210,0.07)",
+    border:"#22415c", text:"#e7f0f6", dim:"#8fadc4", accent:"#f2994a", accentDim:"#c97a38",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" },
+  "midnight-purple": { label:"Midnight Purple",
+    bg:"#150f24", bg2:"#1a1330", panel:"#221a3d", panel2:"#2b2150", grid:"rgba(170,140,220,0.07)",
+    border:"#3a2c5c", text:"#ede8fb", dim:"#a293c9", accent:"#b28dff", accentDim:"#8f6bd9",
+    ok:"#4fd39a", warn:"#f2d24a", danger:"#f2607a" },
+  "forest-slate": { label:"Forest Slate",
+    bg:"#0e1913", bg2:"#122019", panel:"#17281f", panel2:"#1e3327", grid:"rgba(130,190,150,0.07)",
+    border:"#264334", text:"#e6f2ea", dim:"#8fc2a4", accent:"#5fbf7a", accentDim:"#469a5f",
+    ok:"#4fc38a", warn:"#e0c34a", danger:"#e2725c" },
+  "charcoal-mono": { label:"Charcoal Mono",
+    bg:"#121212", bg2:"#181818", panel:"#1e1e1e", panel2:"#262626", grid:"rgba(200,200,200,0.06)",
+    border:"#333333", text:"#eeeeee", dim:"#999999", accent:"#e0e0e0", accentDim:"#a8a8a8",
+    ok:"#6fd39a", warn:"#e0c94a", danger:"#e2574c" },
+  "sunset-ember": { label:"Sunset Ember",
+    bg:"#1c1210", bg2:"#241713", panel:"#2e1e18", panel2:"#3a271e", grid:"rgba(240,150,100,0.07)",
+    border:"#4a3226", text:"#f5e9e2", dim:"#c9a08c", accent:"#ff7a4d", accentDim:"#cc5f38",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2394c" },
+  "ocean-teal": { label:"Ocean Teal",
+    bg:"#0a1f22", bg2:"#0d282c", panel:"#123338", panel2:"#174148", grid:"rgba(100,200,210,0.07)",
+    border:"#1f4a51", text:"#e3f5f6", dim:"#8fc4c9", accent:"#39c7c2", accentDim:"#2a9d99",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" },
+  "rose-quartz": { label:"Rose Quartz",
+    bg:"#1f1418", bg2:"#28181d", panel:"#331f26", panel2:"#40272f", grid:"rgba(240,150,180,0.07)",
+    border:"#4d2f38", text:"#f7e9ee", dim:"#cf9cae", accent:"#f2789f", accentDim:"#cc5c7f",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" },
+  "cyber-lime": { label:"Cyber Lime",
+    bg:"#0b1410", bg2:"#0f1b15", panel:"#14251c", panel2:"#1a3024", grid:"rgba(160,240,100,0.07)",
+    border:"#274a34", text:"#e9f7ea", dim:"#8fc99e", accent:"#a6e22e", accentDim:"#84b825",
+    ok:"#4fc38a", warn:"#f2e94a", danger:"#e2574c" },
+  "espresso-brown": { label:"Espresso Brown",
+    bg:"#1a1410", bg2:"#221a14", panel:"#2c221a", panel2:"#382c20", grid:"rgba(210,170,120,0.07)",
+    border:"#453626", text:"#f2e9dd", dim:"#c2a888", accent:"#d9a25c", accentDim:"#b3813f",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" },
+  "arctic-ice": { label:"Arctic Ice (Light)",
+    bg:"#eef4f8", bg2:"#e4edf3", panel:"#ffffff", panel2:"#f2f7fa", grid:"rgba(30,70,100,0.05)",
+    border:"#cddce6", text:"#152736", dim:"#5b7386", accent:"#1f7ae0", accentDim:"#1560b3",
+    ok:"#1f9d63", warn:"#c98a12", danger:"#d1453a" },
+  "steel-graphite": { label:"Steel Graphite",
+    bg:"#151a1f", bg2:"#1b2128", panel:"#232a32", panel2:"#2c343d", grid:"rgba(150,170,190,0.07)",
+    border:"#39424c", text:"#e8edf2", dim:"#93a2ae", accent:"#6fa8dc", accentDim:"#4f84b8",
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" }
+};
+const THEME_STORAGE_KEY = 'pt-avash-theme';
+
+function applyTheme(name){
+  const t = THEMES[name] || THEMES['blueprint'];
+  const root = document.documentElement.style;
+  root.setProperty('--bg', t.bg);
+  root.setProperty('--bg2', t.bg2);
+  root.setProperty('--panel', t.panel);
+  root.setProperty('--panel2', t.panel2);
+  root.setProperty('--grid', t.grid);
+  root.setProperty('--border', t.border);
+  root.setProperty('--text', t.text);
+  root.setProperty('--dim', t.dim);
+  root.setProperty('--accent', t.accent);
+  root.setProperty('--accent-dim', t.accentDim);
+  root.setProperty('--ok', t.ok);
+  root.setProperty('--warn', t.warn);
+  root.setProperty('--danger', t.danger);
+  try{ localStorage.setItem(THEME_STORAGE_KEY, name); }catch(e){}
+  const sel = document.getElementById('theme-select');
+  if(sel && sel.value !== name) sel.value = name;
+}
+function populateThemeSelect(){
+  const sel = document.getElementById('theme-select');
+  if(!sel) return;
+  sel.innerHTML = Object.keys(THEMES).map(k=>`<option value="${k}">${THEMES[k].label}</option>`).join('');
+}
+function loadSavedTheme(){
+  let saved = 'blueprint';
+  try{ saved = localStorage.getItem(THEME_STORAGE_KEY) || 'blueprint'; }catch(e){}
+  populateThemeSelect();
+  applyTheme(saved);
+}
+loadSavedTheme();
+
 /* ---- GOOGLE DRIVE CONFIG ----
    নিজের Google Cloud OAuth Client ID এখানে বসান (চ্যাটে ধাপে ধাপে গাইড দেওয়া আছে)।
    এই HTML ফাইলটি অবশ্যই http/https থেকে খুলতে হবে (file:// থেকে Google OAuth কাজ করে না)। */
@@ -541,6 +653,8 @@ let currentDashYear = new Date().getFullYear();
 let currentStatsYear = new Date().getFullYear();
 let currentModalId = null;
 let chartMonth, chartStorey, chartLocation, chartStatus;
+let chartTimeProject, chartTimePerson;
+let currentTimeYear = new Date().getFullYear();
 let flagColor = 'green';
 let flagImageData = '';
 const DISCIPLINES = ['structural','architectural','electrical','plumbing'];
@@ -584,6 +698,8 @@ function populateYearSelects(){
   years = [...new Set(years)].sort((a,b)=>a-b);
   document.getElementById('year-select-dash').value = currentDashYear;
   document.getElementById('year-select-stats').value = currentStatsYear;
+  const timeSel = document.getElementById('year-select-time');
+  if(timeSel) timeSel.value = currentTimeYear;
 }
 function changeYear(delta){
   currentDashYear = currentDashYear + delta;
@@ -601,14 +717,15 @@ function onDashYearChange(){
 /* ================= NAV ================= */
 function switchView(view, skipReset){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', backup:'backup'};
+  const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', time:'time', backup:'backup'};
   if(navMap[view]) document.querySelector(`.nav-item[data-view="${navMap[view]}"]`)?.classList.add('active');
-  ['dashboard','month','add','list','stats','backup'].forEach(v=>{
+  ['dashboard','month','add','list','stats','time','backup'].forEach(v=>{
     document.getElementById('view-'+v).style.display = (v===view)?'block':'none';
   });
   if(view==='dashboard') renderDashboard();
   if(view==='list') renderList();
   if(view==='stats') renderStats();
+  if(view==='time') renderTimeAnalysis();
   if(view==='add' && !skipReset) resetForm();
 }
 
@@ -875,8 +992,9 @@ function openModal(id){
       <td class="disc-name">${label}</td>
       <td>${esc(d.doneBy)||'-'}</td>
       <td>${statusBadge(d.status)}</td>
-      <td>${fmtDate(d.received)}</td>
-      <td>${fmtDate(d.completed)}</td>
+      <td>${fmtDateTime(d.received)}</td>
+      <td>${fmtDateTime(d.completed)}</td>
+      <td>${fmtDuration(durationHours(d.received,d.completed))}</td>
     </tr>`;
   };
   document.getElementById('modal-body').innerHTML = `
@@ -898,7 +1016,7 @@ function openModal(id){
     <div class="section-title">কাজের অবস্থা</div>
     <div class="table-scroll">
     <table class="discipline-table">
-      <thead><tr><th></th><th>Done By</th><th>Status</th><th>Receive Date</th><th>Completion Date</th></tr></thead>
+      <thead><tr><th></th><th>Done By</th><th>Status</th><th>Start (Date &amp; Time)</th><th>End (Date &amp; Time)</th><th>সময় লেগেছে</th></tr></thead>
       <tbody>
         ${discRow('Structural','structural')}
         ${discRow('Architectural','architectural')}
@@ -980,6 +1098,84 @@ function renderStats(){
     data:{labels:Object.keys(statusMap), datasets:[{data:Object.values(statusMap), backgroundColor:['#e2574c','#f2c94a','#8fadc4','#4fc38a']}]},
     options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
   });
+}
+
+/* ================= TIME ANALYSIS ================= */
+const DISC_LABELS = {structural:'Structural', architectural:'Architectural', electrical:'Electrical', plumbing:'Plumbing'};
+
+function renderTimeAnalysis(){
+  currentTimeYear = parseInt(document.getElementById('year-select-time').value) || currentDashYear;
+  document.getElementById('year-select-time').value = currentTimeYear;
+  document.getElementById('time-sub').textContent = 'TIME ANALYSIS — ' + currentTimeYear;
+
+  const yearProjects = projects.filter(p=>new Date(p.date).getFullYear()===currentTimeYear);
+
+  // Build a flat list of timed entries
+  const entries = [];
+  yearProjects.forEach(p=>{
+    DISCIPLINES.forEach(k=>{
+      const d = p[k];
+      if(!d) return;
+      const hrs = durationHours(d.received, d.completed);
+      if(hrs===null) return;
+      entries.push({
+        project: p.pname || '(নামহীন)',
+        discipline: DISC_LABELS[k],
+        person: d.doneBy || 'অজানা',
+        start: d.received,
+        end: d.completed,
+        hours: hrs
+      });
+    });
+  });
+
+  document.getElementById('time-summary').innerHTML = [
+    {num: entries.length, label:'টাইম-লগ এন্ট্রি'},
+    {num: entries.reduce((s,e)=>s+e.hours,0).toFixed(1), label:'মোট ঘন্টা'},
+    {num: new Set(entries.map(e=>e.person)).size, label:'ভিন্ন ব্যক্তি'},
+    {num: entries.length? (entries.reduce((s,e)=>s+e.hours,0)/entries.length).toFixed(1) : '0', label:'গড় সময়/এন্ট্রি (ঘন্টা)'},
+  ].map(c=>`<div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
+
+  // Aggregate per project
+  const projMap = {};
+  entries.forEach(e=>{ projMap[e.project] = (projMap[e.project]||0) + e.hours; });
+  // Aggregate per person
+  const personMap = {};
+  entries.forEach(e=>{ personMap[e.person] = (personMap[e.person]||0) + e.hours; });
+
+  const chartColors = ['#f2994a','#4fc38a','#56a2c2','#e2574c','#f2c94a','#9b6ef2','#f27ab0','#6ee7b7'];
+  const gridColor = 'rgba(120,170,210,0.12)';
+  const textColor = '#8fadc4';
+  Chart.defaults.color = textColor;
+  Chart.defaults.borderColor = gridColor;
+
+  if(chartTimeProject) chartTimeProject.destroy();
+  chartTimeProject = new Chart(document.getElementById('chart-time-project'), {
+    type:'bar',
+    data:{ labels:Object.keys(projMap), datasets:[{label:'ঘন্টা', data:Object.values(projMap).map(v=>+v.toFixed(2)), backgroundColor:'#f2994a', borderRadius:4}] },
+    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true}} }
+  });
+
+  if(chartTimePerson) chartTimePerson.destroy();
+  chartTimePerson = new Chart(document.getElementById('chart-time-person'), {
+    type:'doughnut',
+    data:{ labels:Object.keys(personMap), datasets:[{data:Object.values(personMap).map(v=>+v.toFixed(2)), backgroundColor:chartColors}] },
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}} }
+  });
+
+  document.getElementById('time-empty').style.display = entries.length? 'none':'block';
+  document.getElementById('time-table-body').innerHTML = entries
+    .sort((a,b)=> new Date(b.start) - new Date(a.start))
+    .map(e=>`
+    <tr>
+      <td>${esc(e.project)}</td>
+      <td>${esc(e.discipline)}</td>
+      <td>${esc(e.person)}</td>
+      <td>${fmtDateTime(e.start)}</td>
+      <td>${fmtDateTime(e.end)}</td>
+      <td>${fmtDuration(e.hours)}</td>
+    </tr>
+  `).join('');
 }
 
 /* ================= GOOGLE DRIVE (auto-save) ================= */
@@ -1160,6 +1356,26 @@ function fmtDate(d){
   const dt = new Date(d);
   if(isNaN(dt)) return '-';
   return dt.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+}
+function fmtDateTime(d){
+  if(!d) return '-';
+  const dt = new Date(d);
+  if(isNaN(dt)) return '-';
+  return dt.toLocaleString('en-GB', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+function durationHours(start, end){
+  if(!start || !end) return null;
+  const d1 = new Date(start), d2 = new Date(end);
+  if(isNaN(d1) || isNaN(d2)) return null;
+  const diff = (d2 - d1) / 3600000;
+  if(diff < 0) return null;
+  return diff;
+}
+function fmtDuration(hrs){
+  if(hrs===null || hrs===undefined || isNaN(hrs)) return '-';
+  const h = Math.floor(hrs);
+  const m = Math.round((hrs - h) * 60);
+  return `${h}ঘ ${m}মি`;
 }
 function esc(s){
   if(s===undefined||s===null) return '';
