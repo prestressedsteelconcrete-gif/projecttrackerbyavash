@@ -282,7 +282,8 @@ select.status-select option{background:var(--panel);}
     <div class="nav-item" data-view="list" onclick="switchView('list')"><span class="nav-num">03</span> সব প্রজেক্ট</div>
     <div class="nav-item" data-view="stats" onclick="switchView('stats')"><span class="nav-num">04</span> পরিসংখ্যান</div>
     <div class="nav-item" data-view="time" onclick="switchView('time')"><span class="nav-num">05</span> সময় বিশ্লেষণ</div>
-    <div class="nav-item" data-view="backup" onclick="switchView('backup')"><span class="nav-num">06</span> ব্যাকআপ</div>
+    <div class="nav-item" data-view="people" onclick="switchView('people')"><span class="nav-num">06</span> কর্মী প্রোফাইল</div>
+    <div class="nav-item" data-view="backup" onclick="switchView('backup')"><span class="nav-num">07</span> ব্যাকআপ</div>
     <div class="sidebar-foot">
       <div style="margin-bottom:14px;">
         <label style="display:block;font-size:11px;color:var(--dim);font-family:var(--mono);margin-bottom:5px;">থিম (Theme)</label>
@@ -347,7 +348,7 @@ select.status-select option{background:var(--panel);}
           <div class="field"><label>Project Name / Client</label><input type="text" id="f-pname" placeholder="যেমনঃ Shaban Ali"></div>
           <div class="field"><label>Storey</label><input type="text" id="f-storey" placeholder="যেমনঃ G+2"></div>
           <div class="field"><label>Location</label><input type="text" id="f-location" placeholder="যেমনঃ Kushtia"></div>
-          <div class="field"><label>Name of Employee (Engineer)</label><input type="text" id="f-employee" placeholder="যেমনঃ Engr. Avash"></div>
+          <div class="field"><label>Name of Employee (Engineer)</label><input type="text" id="f-employee" placeholder="যেমনঃ Engr. Avash" list="all-names"></div>
           <div class="field"><label>Received Date</label><input type="date" id="f-received"></div>
           <div class="field"><label>Submission Date</label><input type="date" id="f-submission"></div>
           <div class="field"><label>Soil Test</label><input type="text" id="f-soiltest" placeholder="যেমনঃ 1 TSF"></div>
@@ -364,28 +365,28 @@ select.status-select option{background:var(--panel);}
           <tbody>
             <tr>
               <td class="disc-name">Structural</td>
-              <td><input type="text" id="f-structural-doneby" placeholder="নাম"></td>
+              <td><input type="text" id="f-structural-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-structural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
               <td><input type="datetime-local" id="f-structural-received"></td>
               <td><input type="datetime-local" id="f-structural-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Architectural</td>
-              <td><input type="text" id="f-architectural-doneby" placeholder="নাম"></td>
+              <td><input type="text" id="f-architectural-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-architectural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
               <td><input type="datetime-local" id="f-architectural-received"></td>
               <td><input type="datetime-local" id="f-architectural-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Electrical</td>
-              <td><input type="text" id="f-electrical-doneby" placeholder="নাম"></td>
+              <td><input type="text" id="f-electrical-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-electrical-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
               <td><input type="datetime-local" id="f-electrical-received"></td>
               <td><input type="datetime-local" id="f-electrical-completed"></td>
             </tr>
             <tr>
               <td class="disc-name">Plumbing</td>
-              <td><input type="text" id="f-plumbing-doneby" placeholder="নাম"></td>
+              <td><input type="text" id="f-plumbing-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-plumbing-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
               <td><input type="datetime-local" id="f-plumbing-received"></td>
               <td><input type="datetime-local" id="f-plumbing-completed"></td>
@@ -495,6 +496,35 @@ select.status-select option{background:var(--panel);}
       </div>
     </div>
 
+    <!-- ---------- EMPLOYEE PROFILES ---------- -->
+    <div id="view-people" style="display:none;">
+      <div class="topbar"><div><h2>কর্মী প্রোফাইল</h2><div class="sub">EMPLOYEE PROFILES — নাম ধরে পরিসংখ্যান</div></div></div>
+      <div class="card" style="margin-bottom:14px;">
+        <input type="text" id="people-search" placeholder="নাম দিয়ে খুঁজুন..." oninput="renderPeopleList()" style="width:100%;">
+      </div>
+      <div class="month-grid" id="people-grid"></div>
+      <div class="empty" id="people-empty" style="display:none;">এখনো কোনো নাম পাওয়া যায়নি — Add Project ফর্মে Employee/Done By ঘরে নাম দিলে এখানে প্রোফাইল তৈরি হবে।</div>
+    </div>
+
+    <!-- ---------- PERSON DETAIL ---------- -->
+    <div id="view-persondetail" style="display:none;">
+      <div class="topbar">
+        <div><h2 id="person-title">নাম</h2><div class="sub">EMPLOYEE STATISTICS</div></div>
+        <button class="btn btn-sm" style="width:auto;" onclick="switchView('people')">← কর্মী প্রোফাইল</button>
+      </div>
+      <div class="grid-cards" id="person-stat-cards"></div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0;">কাজের বিস্তারিত তালিকা</div>
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>তারিখ</th><th>প্রজেক্ট</th><th>ভূমিকা / Discipline</th><th>Status</th><th>Start</th><th>End</th><th>অফিস সময় লেগেছে</th></tr></thead>
+          <tbody id="person-table-body"></tbody>
+        </table>
+        </div>
+        <div class="empty" id="person-empty" style="display:none;">কোনো কাজ পাওয়া যায়নি।</div>
+      </div>
+    </div>
+
     <!-- ---------- BACKUP ---------- -->
     <div id="view-backup" style="display:none;">
       <div class="topbar"><div><h2>ব্যাকআপ ও ডেটা</h2><div class="sub">GOOGLE DRIVE AUTO-SAVE / EXPORT / IMPORT</div></div></div>
@@ -536,6 +566,8 @@ select.status-select option{background:var(--panel);}
   </div>
 </div>
 </div>
+
+<datalist id="all-names"></datalist>
 
 <!-- ---------- VIEW / EDIT MODAL ---------- -->
 <div class="modal-bg" id="modal-bg">
@@ -717,15 +749,17 @@ function onDashYearChange(){
 /* ================= NAV ================= */
 function switchView(view, skipReset){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', time:'time', backup:'backup'};
+  const navMap = {dashboard:'dashboard', add:'add', list:'list', stats:'stats', time:'time', people:'people', backup:'backup'};
   if(navMap[view]) document.querySelector(`.nav-item[data-view="${navMap[view]}"]`)?.classList.add('active');
-  ['dashboard','month','add','list','stats','time','backup'].forEach(v=>{
+  ['dashboard','month','add','list','stats','time','people','persondetail','backup'].forEach(v=>{
     document.getElementById('view-'+v).style.display = (v===view)?'block':'none';
   });
+  populateNamesDatalist();
   if(view==='dashboard') renderDashboard();
   if(view==='list') renderList();
   if(view==='stats') renderStats();
   if(view==='time') renderTimeAnalysis();
+  if(view==='people') renderPeopleList();
   if(view==='add' && !skipReset) resetForm();
 }
 
@@ -931,7 +965,7 @@ function deleteProject(id){
   if(!confirm('আপনি কি নিশ্চিত এই প্রজেক্টটি মুছে ফেলতে চান?')) return;
   projects = projects.filter(p=>p.id!==id);
   closeModal();
-  renderDashboard(); renderList();
+  renderDashboard(); renderList(); populateNamesDatalist();
   scheduleAutoSave();
 }
 
@@ -1178,6 +1212,109 @@ function renderTimeAnalysis(){
   `).join('');
 }
 
+/* ================= EMPLOYEE / PEOPLE PROFILES =================
+   যেই কোনো প্রজেক্টে Employee বা Done By ঘরে একটা নাম একবার সেভ হলে
+   সেই নামটা সব জায়গায় (autocomplete + এখানে) মনে থাকবে, যাতে বানান
+   ভুল কম হয় এবং প্রতিটা মানুষের আলাদা প্রোফাইল/পরিসংখ্যান দেখা যায়। */
+
+// প্রজেক্ট ডেটা থেকে এ পর্যন্ত ব্যবহৃত সব নাম (ডুপ্লিকেট বাদে) বের করে
+function collectAllNames(){
+  const set = new Map(); // lowercase key -> first-seen original casing
+  projects.forEach(p=>{
+    const names = [p.employee, ...DISCIPLINES.map(k=> p[k] && p[k].doneBy)];
+    names.forEach(n=>{
+      const t = (n||'').trim();
+      if(!t) return;
+      const key = t.toLowerCase();
+      if(!set.has(key)) set.set(key, t);
+    });
+  });
+  return [...set.values()].sort((a,b)=> a.localeCompare(b));
+}
+
+// autocomplete datalist সবসময় আপ-টু-ডেট রাখা হয়
+function populateNamesDatalist(){
+  const dl = document.getElementById('all-names');
+  if(!dl) return;
+  dl.innerHTML = collectAllNames().map(n=>`<option value="${esc(n)}"></option>`).join('');
+}
+
+// একজন নির্দিষ্ট মানুষের সব কাজ + অফিস-সময় হিসাব বের করা
+function computePersonStats(name){
+  const key = name.trim().toLowerCase();
+  const entries = [];
+  projects.forEach(p=>{
+    DISCIPLINES.forEach(k=>{
+      const d = p[k];
+      if(!d || !d.doneBy) return;
+      if(d.doneBy.trim().toLowerCase() !== key) return;
+      entries.push({
+        date: p.date, project: p.pname, discipline: DISC_LABELS[k], status: d.status,
+        start: d.received, end: d.completed, hours: durationHours(d.received, d.completed)
+      });
+    });
+    if(p.employee && p.employee.trim().toLowerCase() === key){
+      // মূল দায়িত্বপ্রাপ্ত ইঞ্জিনিয়ার হিসেবেও এন্ট্রি (যদি নিজে কোনো discipline-এও না থাকে)
+      const alreadyCounted = DISCIPLINES.some(k=> p[k] && p[k].doneBy && p[k].doneBy.trim().toLowerCase()===key);
+      if(!alreadyCounted){
+        entries.push({ date:p.date, project:p.pname, discipline:'Engineer (দায়িত্বপ্রাপ্ত)', status: overallStatus(p), start:null, end:null, hours:null });
+      }
+    }
+  });
+  const projectSet = new Set(entries.map(e=>e.project));
+  const totalHours = entries.reduce((s,e)=> s + (e.hours||0), 0);
+  const withHours = entries.filter(e=> e.hours!==null && e.hours!==undefined);
+  const doneCount = entries.filter(e=> e.status==='Done').length;
+  const activeCount = entries.filter(e=> e.status==='In Progress' || e.status==='Pending').length;
+  return { entries, totalProjects: projectSet.size, totalEntries: entries.length, totalHours, avgHours: withHours.length? totalHours/withHours.length : 0, doneCount, activeCount };
+}
+
+let currentPersonName = null;
+
+function renderPeopleList(){
+  const q = (document.getElementById('people-search')?.value || '').toLowerCase().trim();
+  const names = collectAllNames().filter(n=> !q || n.toLowerCase().includes(q));
+  document.getElementById('people-empty').style.display = names.length? 'none':'block';
+  document.getElementById('people-grid').innerHTML = names.map(n=>{
+    const s = computePersonStats(n);
+    return `<div class="month-card" onclick="openPersonProfile('${esc(n).replace(/'/g,"\\'")}')">
+      <div class="m-name">${esc(n)}</div>
+      <div class="m-count">${s.totalProjects}</div>
+      <div class="m-label">প্রজেক্ট &middot; ${fmtDuration(s.totalHours)}</div>
+    </div>`;
+  }).join('');
+}
+
+function openPersonProfile(name){
+  currentPersonName = name;
+  switchView('persondetail', true);
+  document.getElementById('person-title').textContent = name;
+  const s = computePersonStats(name);
+  document.getElementById('person-stat-cards').innerHTML = [
+    {num: s.totalProjects, label:'মোট প্রজেক্ট'},
+    {num: s.totalEntries, label:'মোট কাজের এন্ট্রি'},
+    {num: fmtDuration(s.totalHours), label:'মোট অফিস-সময় লেগেছে'},
+    {num: fmtDuration(s.avgHours), label:'গড় সময়/এন্ট্রি'},
+    {num: s.doneCount, label:'সম্পন্ন (Done)'},
+    {num: s.activeCount, label:'চলমান (Progress/Pending)'},
+  ].map(c=>`<div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
+
+  document.getElementById('person-empty').style.display = s.entries.length? 'none':'block';
+  document.getElementById('person-table-body').innerHTML = s.entries
+    .sort((a,b)=> new Date(b.date) - new Date(a.date))
+    .map(e=>`
+    <tr>
+      <td>${fmtDate(e.date)}</td>
+      <td>${esc(e.project)}</td>
+      <td>${esc(e.discipline)}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td>${fmtDateTime(e.start)}</td>
+      <td>${fmtDateTime(e.end)}</td>
+      <td>${fmtDuration(e.hours)}</td>
+    </tr>
+  `).join('');
+}
+
 /* ================= GOOGLE DRIVE (auto-save) ================= */
 function initGoogleClient(){
   if(!window.google || !google.accounts) return; // script not loaded yet
@@ -1363,13 +1500,42 @@ function fmtDateTime(d){
   if(isNaN(dt)) return '-';
   return dt.toLocaleString('en-GB', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
 }
+/* ================= অফিস আওয়ার সেটিংস =================
+   অফিস সময়ঃ সকাল ৯টা থেকে সন্ধ্যা ৬:৩০, দুপুরে ১ ঘন্টা লাঞ্চ ব্রেক (১টা-২টা),
+   এবং শুক্রবার সাপ্তাহিক ছুটি। এই সেটিংস পরিবর্তন করতে চাইলে শুধু নিচের মানগুলো বদলান। */
+const OFFICE_START = {h:9, m:0};
+const OFFICE_END = {h:18, m:30};
+const LUNCH_START = {h:13, m:0};
+const LUNCH_END = {h:14, m:0};
+const OFF_DAY = 5; // getDay(): 0=Sun,1=Mon,...5=Fri,6=Sat
+
 function durationHours(start, end){
   if(!start || !end) return null;
   const d1 = new Date(start), d2 = new Date(end);
   if(isNaN(d1) || isNaN(d2)) return null;
-  const diff = (d2 - d1) / 3600000;
-  if(diff < 0) return null;
-  return diff;
+  if(d2 < d1) return null;
+
+  let total = 0;
+  const cursor = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+  const lastDay = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+
+  while(cursor <= lastDay){
+    if(cursor.getDay() !== OFF_DAY){
+      const segs = [
+        [new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate(),OFFICE_START.h,OFFICE_START.m),
+         new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate(),LUNCH_START.h,LUNCH_START.m)],
+        [new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate(),LUNCH_END.h,LUNCH_END.m),
+         new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate(),OFFICE_END.h,OFFICE_END.m)],
+      ];
+      segs.forEach(([segStart, segEnd])=>{
+        const overlapStart = segStart > d1 ? segStart : d1;
+        const overlapEnd = segEnd < d2 ? segEnd : d2;
+        if(overlapEnd > overlapStart) total += (overlapEnd - overlapStart) / 3600000;
+      });
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return total;
 }
 function fmtDuration(hrs){
   if(hrs===null || hrs===undefined || isNaN(hrs)) return '-';
