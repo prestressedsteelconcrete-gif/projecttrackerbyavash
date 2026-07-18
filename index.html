@@ -120,7 +120,8 @@ select:focus, input:focus, textarea:focus{outline:none;border-color:var(--accent
 }
 .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
 
-.card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
+.stat-card, .month-card, .chart-box, .flag-box, .login-card, .sidebar{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
 .grid-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
 .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:16px 18px;}
 .stat-card .num{font-family:var(--mono);font-size:26px;color:var(--accent);font-weight:700;}
@@ -139,6 +140,13 @@ select:focus, input:focus, textarea:focus{outline:none;border-color:var(--accent
 .month-card .m-name{font-family:var(--display);font-size:15px;margin-bottom:8px;}
 .month-card .m-count{font-family:var(--mono);font-size:24px;color:var(--accent);}
 .month-card .m-label{font-size:11px;color:var(--dim);}
+.dt-row{display:flex;gap:6px;align-items:center;}
+.dt-row input{flex:1;min-width:0;}
+.btn-now{
+  flex:none;padding:6px 10px;font-size:11px;font-family:var(--mono);white-space:nowrap;
+  background:var(--panel2);border:1px solid var(--border);color:var(--accent);border-radius:4px;cursor:pointer;
+}
+.btn-now:hover{border-color:var(--accent);background:var(--panel);}
 
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{
@@ -343,7 +351,7 @@ select.status-select option{background:var(--panel);}
       <div class="topbar"><div><h2 id="add-title">নতুন প্রজেক্ট যোগ করুন</h2><div class="sub">PROJECT ENTRY FORM</div></div></div>
       <div class="card">
         <div class="form-grid">
-          <div class="field"><label>তারিখ (Date)</label><input type="date" id="f-date"></div>
+          <div class="field"><label>তারিখ (Date)</label><div class="dt-row"><input type="date" id="f-date"><button type="button" class="btn-now" onclick="setNow('f-date')">Now</button></div></div>
           <div class="field"><label>Project Number</label><input type="text" id="f-pnum" placeholder="যেমনঃ 1"></div>
           <div class="field"><label>Project Name / Client</label><input type="text" id="f-pname" placeholder="যেমনঃ Shaban Ali"></div>
           <div class="field"><label>Storey</label><input type="text" id="f-storey" placeholder="যেমনঃ G+2"></div>
@@ -367,29 +375,29 @@ select.status-select option{background:var(--panel);}
               <td class="disc-name">Structural</td>
               <td><input type="text" id="f-structural-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-structural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="datetime-local" id="f-structural-received"></td>
-              <td><input type="datetime-local" id="f-structural-completed"></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-structural-received"><button type="button" class="btn-now" onclick="setNow('f-structural-received')">Now</button></div></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-structural-completed"><button type="button" class="btn-now" onclick="setNow('f-structural-completed')">Now</button></div></td>
             </tr>
             <tr>
               <td class="disc-name">Architectural</td>
               <td><input type="text" id="f-architectural-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-architectural-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="datetime-local" id="f-architectural-received"></td>
-              <td><input type="datetime-local" id="f-architectural-completed"></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-architectural-received"><button type="button" class="btn-now" onclick="setNow('f-architectural-received')">Now</button></div></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-architectural-completed"><button type="button" class="btn-now" onclick="setNow('f-architectural-completed')">Now</button></div></td>
             </tr>
             <tr>
               <td class="disc-name">Electrical</td>
               <td><input type="text" id="f-electrical-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-electrical-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="datetime-local" id="f-electrical-received"></td>
-              <td><input type="datetime-local" id="f-electrical-completed"></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-electrical-received"><button type="button" class="btn-now" onclick="setNow('f-electrical-received')">Now</button></div></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-electrical-completed"><button type="button" class="btn-now" onclick="setNow('f-electrical-completed')">Now</button></div></td>
             </tr>
             <tr>
               <td class="disc-name">Plumbing</td>
               <td><input type="text" id="f-plumbing-doneby" placeholder="নাম" list="all-names"></td>
               <td><select id="f-plumbing-status"><option>Not Started</option><option>In Progress</option><option>Pending</option><option>Done</option></select></td>
-              <td><input type="datetime-local" id="f-plumbing-received"></td>
-              <td><input type="datetime-local" id="f-plumbing-completed"></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-plumbing-received"><button type="button" class="btn-now" onclick="setNow('f-plumbing-received')">Now</button></div></td>
+              <td><div class="dt-row"><input type="datetime-local" id="f-plumbing-completed"><button type="button" class="btn-now" onclick="setNow('f-plumbing-completed')">Now</button></div></td>
             </tr>
           </tbody>
         </table>
@@ -424,7 +432,9 @@ select.status-select option{background:var(--panel);}
 
     <!-- ---------- ALL PROJECTS / SEARCH ---------- -->
     <div id="view-list" style="display:none;">
-      <div class="topbar"><div><h2>সব প্রজেক্ট</h2><div class="sub">ADVANCED SEARCH</div></div></div>
+      <div class="topbar"><div><h2>সব প্রজেক্ট</h2><div class="sub">ADVANCED SEARCH</div></div>
+        <button class="btn btn-sm" style="width:auto;" onclick="printProjectList()">🖨 প্রিন্ট করুন (Start/Submit সহ)</button>
+      </div>
       <div class="filters">
         <input type="text" id="filt-name" placeholder="Client / Project Name" oninput="renderList()">
         <input type="text" id="filt-location" placeholder="Location" oninput="renderList()">
@@ -631,7 +641,20 @@ const THEMES = {
   "steel-graphite": { label:"Steel Graphite",
     bg:"#151a1f", bg2:"#1b2128", panel:"#232a32", panel2:"#2c343d", grid:"rgba(150,170,190,0.07)",
     border:"#39424c", text:"#e8edf2", dim:"#93a2ae", accent:"#6fa8dc", accentDim:"#4f84b8",
-    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" }
+    ok:"#4fc38a", warn:"#f2c94a", danger:"#e2574c" },
+  "hightech-dark": { label:"HighTech Corporate (Dark)",
+    bg:"#0a0e1a", bg2:"#0f1424", panel:"#141b30", panel2:"#1b2440", grid:"rgba(38,212,140,0.06)",
+    border:"#26314a", text:"#eef2f8", dim:"#8b96b3", accent:"#3a5fe0", accentDim:"#2a46b0",
+    ok:"#26d48c", warn:"#ffc107", danger:"#dc3545" },
+  "hightech-light": { label:"HighTech Corporate (Light)",
+    bg:"#f4f6fb", bg2:"#eef1f8", panel:"#ffffff", panel2:"#f4f6fb", grid:"rgba(24,66,182,0.05)",
+    border:"#dde3ee", text:"#1b2333", dim:"#6b7a90", accent:"#1842b6", accentDim:"#123289",
+    ok:"#1a9d63", warn:"#c98a12", danger:"#c53040" },
+  "vivid-gradient": { label:"Glassy Aurora (Blue→Purple→Pink)",
+    bg:"#1b1147", bg2:"rgba(255,255,255,0.05)", panel:"rgba(255,255,255,0.10)", panel2:"rgba(255,255,255,0.16)",
+    grid:"rgba(255,255,255,0.08)", border:"rgba(255,255,255,0.22)", text:"#f8f5ff", dim:"#d6c9f7",
+    accent:"#ff3d9a", accentDim:"#cc2f7a", ok:"#3ddc97", warn:"#ffce54", danger:"#ff5470",
+    bodyGradient:"radial-gradient(1100px circle at 12% 18%, rgba(70,80,255,0.55), transparent 60%), radial-gradient(1000px circle at 88% 12%, rgba(255,45,149,0.45), transparent 55%), radial-gradient(1300px circle at 78% 88%, rgba(150,50,235,0.5), transparent 60%), radial-gradient(900px circle at 20% 90%, rgba(40,160,255,0.4), transparent 55%), linear-gradient(135deg, #1c2bd6 0%, #3b1f9e 30%, #8b1fae 65%, #e6188a 100%)" }
 };
 const THEME_STORAGE_KEY = 'pt-avash-theme';
 
@@ -651,6 +674,13 @@ function applyTheme(name){
   root.setProperty('--ok', t.ok);
   root.setProperty('--warn', t.warn);
   root.setProperty('--danger', t.danger);
+  if(t.bodyGradient){
+    document.body.style.backgroundImage = t.bodyGradient;
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundSize = 'cover';
+  } else {
+    document.body.style.backgroundImage = 'none';
+  }
   try{ localStorage.setItem(THEME_STORAGE_KEY, name); }catch(e){}
   const sel = document.getElementById('theme-select');
   if(sel && sel.value !== name) sel.value = name;
@@ -962,6 +992,9 @@ function editProject(id){
 }
 
 function deleteProject(id){
+  const pw = prompt('প্রজেক্ট মুছে ফেলতে পাসওয়ার্ড দিন:');
+  if(pw === null) return; // ব্যবহারকারী বাতিল করেছেন
+  if(pw !== PASSWORD){ alert('পাসওয়ার্ড সঠিক নয় — প্রজেক্ট মুছে ফেলা হয়নি।'); return; }
   if(!confirm('আপনি কি নিশ্চিত এই প্রজেক্টটি মুছে ফেলতে চান?')) return;
   projects = projects.filter(p=>p.id!==id);
   closeModal();
@@ -970,7 +1003,7 @@ function deleteProject(id){
 }
 
 /* ================= LIST / SEARCH ================= */
-function renderList(){
+function getFilteredProjects(){
   const name = document.getElementById('filt-name').value.toLowerCase();
   const loc = document.getElementById('filt-location').value.toLowerCase();
   const storey = document.getElementById('filt-storey').value.toLowerCase();
@@ -979,7 +1012,7 @@ function renderList(){
   const from = document.getElementById('filt-from').value;
   const to = document.getElementById('filt-to').value;
 
-  let rows = projects.filter(p=>{
+  return projects.filter(p=>{
     if(name && !p.pname.toLowerCase().includes(name)) return false;
     if(loc && !p.location.toLowerCase().includes(loc)) return false;
     if(storey && !p.storey.toLowerCase().includes(storey)) return false;
@@ -989,6 +1022,10 @@ function renderList(){
     if(to && p.date > to) return false;
     return true;
   }).sort((a,b)=> new Date(b.date)-new Date(a.date));
+}
+
+function renderList(){
+  let rows = getFilteredProjects();
 
   document.getElementById('list-empty').style.display = rows.length? 'none':'block';
   document.getElementById('list-table-body').innerHTML = rows.map(p=>{
@@ -1014,6 +1051,47 @@ function renderList(){
   `;}).join('');
 }
 
+// Received (start) ও Submission (submit) তারিখসহ প্রজেক্ট তালিকা প্রিন্ট করা
+function printProjectList(){
+  const rows = getFilteredProjects();
+  const tableRows = rows.map(p=>`
+    <tr>
+      <td>${esc(p.pnum)||'-'}</td>
+      <td>${esc(p.pname)}</td>
+      <td>${esc(p.storey)||'-'}</td>
+      <td>${esc(p.location)||'-'}</td>
+      <td>${esc(p.employee)||'-'}</td>
+      <td>${fmtDate(p.received)}</td>
+      <td>${fmtDate(p.submission)}</td>
+      <td>${overallStatus(p)}</td>
+    </tr>
+  `).join('');
+  const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="UTF-8">
+    <title>প্রজেক্ট তালিকা — Start/Submit Report</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:24px;color:#111;}
+      h1{font-size:18px;margin-bottom:4px;}
+      .sub{color:#555;font-size:12px;margin-bottom:18px;}
+      table{width:100%;border-collapse:collapse;font-size:12.5px;}
+      th,td{border:1px solid #999;padding:6px 8px;text-align:left;}
+      th{background:#eee;}
+      @media print{ body{padding:0;} }
+    </style></head><body>
+    <h1>প্রজেক্ট তালিকা — Start (Received) ও Submit (Submission) তারিখ</h1>
+    <div class="sub">তৈরির সময়ঃ ${new Date().toLocaleString('en-GB')} &middot; মোট প্রজেক্টঃ ${rows.length}</div>
+    <table>
+      <thead><tr><th>#</th><th>Client / Project</th><th>Storey</th><th>Location</th><th>Engineer</th><th>Start (Received)</th><th>Submit (Submission)</th><th>Status</th></tr></thead>
+      <tbody>${tableRows || '<tr><td colspan="8">কোনো প্রজেক্ট পাওয়া যায়নি।</td></tr>'}</tbody>
+    </table>
+  </body></html>`;
+  const win = window.open('', '_blank', 'width=1000,height=750');
+  if(!win){ alert('পপ-আপ ব্লক করা আছে — ব্রাউজারে পপ-আপ অনুমতি দিন।'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(()=> win.print(), 350);
+}
+
 /* ================= MODAL (view detail) ================= */
 function openModal(id){
   currentModalId = id;
@@ -1032,6 +1110,20 @@ function openModal(id){
     </tr>`;
   };
   document.getElementById('modal-body').innerHTML = `
+    <div class="section-title" style="margin-top:0;">প্রজেক্ট পরিসংখ্যান</div>
+    <div class="grid-cards" style="margin-bottom:18px;">
+      ${(()=>{
+        const totalHours = DISCIPLINES.reduce((s,k)=> s + (durationHours(p[k].received, p[k].completed)||0), 0);
+        const doneCountP = DISCIPLINES.filter(k=> p[k] && p[k].status==='Done').length;
+        const daysToSubmit = (p.received && p.submission) ? Math.round((new Date(p.submission)-new Date(p.received))/86400000) : null;
+        return [
+          {num: fmtDuration(totalHours), label:'মোট অফিস-সময় (সব Discipline)'},
+          {num: `${doneCountP}/4`, label:'সম্পন্ন Discipline'},
+          {num: daysToSubmit!==null ? daysToSubmit+' দিন' : '-', label:'Received → Submission'},
+          {num: overallStatus(p), label:'সার্বিক Status'},
+        ].map(c=>`<div class="stat-card"><div class="num" style="font-size:18px;">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
+      })()}
+    </div>
     <div class="form-grid">
       <div class="field"><label>তারিখ</label><div>${fmtDate(p.date)}</div></div>
       <div class="field"><label>Project Number</label><div>${esc(p.pnum)||'-'}</div></div>
@@ -1546,6 +1638,18 @@ function fmtDuration(hrs){
 function esc(s){
   if(s===undefined||s===null) return '';
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// ইনস্ট্যান্ট বর্তমান তারিখ ও সময় বসানোর জন্য (Now বাটন)
+function setNow(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  if(el.type === 'datetime-local'){
+    el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  } else if(el.type === 'date'){
+    el.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
 }
 function statusBadge(s){
   const cls = s==='Done'?'done': s==='In Progress'?'progress': s==='Pending'?'pending': 'notstarted';
