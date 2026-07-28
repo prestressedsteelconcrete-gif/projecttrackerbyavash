@@ -640,6 +640,67 @@ html[data-theme="pink-glass"] .chart-box canvas{filter:drop-shadow(0 10px 12px r
 .map-project-badge{display:inline-flex;margin-top:3px;padding:2px 7px;border-radius:999px;background:rgba(39,212,222,.13);color:#72f2f7;font:700 10px var(--mono)}
 @media(max-width:620px){.bd-project-map{min-height:430px}.bd-map-stage.official{height:420px;padding:6px 2px 32px}.district-suggestions{max-height:220px}}
 </style>
+
+<style id="modern-neutral-map-overrides">
+/* Clean, neutral analytics map */
+.location-map-box{background:#f8fafc!important;border:1px solid #e2e8f0!important;box-shadow:0 18px 45px rgba(15,23,42,.08)!important;}
+.location-map-box:before{display:none!important;}
+.location-map-box .panel-head h3{color:#0f172a!important;}
+.location-map-box .panel-kicker{color:#64748b!important;}
+.map-live-dot{color:#166534!important;background:#f0fdf4!important;border-color:#bbf7d0!important;box-shadow:none!important;}
+.bd-map-stage.official{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:18px 18px 54px;box-shadow:inset 0 1px 0 #fff;}
+.bd-map-stage.official .official-bd-svg{filter:drop-shadow(0 14px 22px rgba(15,23,42,.12))!important;}
+.official-bd-svg [id$="_District"]{opacity:1!important;fill:#e5e7eb!important;stroke:#ffffff!important;stroke-width:1.35!important;filter:none!important;}
+.official-bd-svg [id$="_District"].has-project{fill:#334155!important;filter:none!important;}
+.official-bd-svg [id$="_District"].hot{fill:#0f172a!important;filter:none!important;}
+.official-bd-svg [id$="_District"]:hover,.official-bd-svg [id$="_District"].selected{fill:#2563eb!important;filter:none!important;}
+.official-bd-svg text,.official-bd-svg [id*="Label"],.official-bd-svg [id*="label"]{display:none!important;}
+.bd-map-legend{left:22px!important;right:22px!important;bottom:16px!important;justify-content:center!important;gap:20px!important;color:#64748b!important;font:600 10px var(--mono)!important;}
+.bd-map-legend i{width:10px!important;height:10px!important;border-radius:3px!important;background:#334155!important;box-shadow:none!important;}
+.bd-map-legend span:last-child i{background:#e5e7eb!important;border:1px solid #cbd5e1!important;}
+.district-tooltip.official-tip{background:#0f172a!important;border:0!important;color:#fff!important;box-shadow:0 14px 30px rgba(15,23,42,.22)!important;}
+.map-project-badge{background:#dbeafe!important;color:#1d4ed8!important;}
+.map-active-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 0;padding:0 14px;}
+.map-active-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font:700 10px var(--mono);box-shadow:0 4px 14px rgba(15,23,42,.05);}
+.map-active-chip b{display:grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#0f172a;color:#fff;font-size:9px;}
+html[data-theme-mode="dark"] .location-map-box{background:#111827!important;border-color:#253047!important;}
+html[data-theme-mode="dark"] .location-map-box .panel-head h3{color:#f8fafc!important;}
+html[data-theme-mode="dark"] .location-map-box .panel-kicker{color:#94a3b8!important;}
+html[data-theme-mode="dark"] .bd-map-stage.official{background:#0f172a;border-color:#26344d;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"]{fill:#334155!important;stroke:#0f172a!important;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"].has-project{fill:#cbd5e1!important;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"].hot{fill:#f8fafc!important;}
+html[data-theme-mode="dark"] .map-active-chip{background:#111827;border-color:#334155;color:#e2e8f0;}
+@media(max-width:620px){.bd-map-stage.official{padding:12px 8px 58px}.bd-map-legend{gap:12px!important;font-size:9px!important}.map-active-list{padding:0 4px}}
+</style>
+
+<style id="modern-glass-analytics-v2">
+/* Glass analytics refresh: theme-matched, transparent and count-based */
+.location-map-box,.chart-row .chart-box{
+  background:linear-gradient(145deg,rgba(255,255,255,.36),rgba(255,255,255,.12))!important;
+  border:1px solid rgba(255,255,255,.58)!important;
+  box-shadow:0 20px 55px rgba(40,105,165,.13),inset 0 1px 0 rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(24px) saturate(130%)!important;-webkit-backdrop-filter:blur(24px) saturate(130%)!important;
+}
+.bd-map-stage.official{
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.46),rgba(255,255,255,.08) 58%,transparent 80%)!important;
+  border:1px solid rgba(255,255,255,.48)!important;border-radius:22px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 15px 40px rgba(43,113,175,.09)!important;
+}
+.bd-map-stage.official .official-bd-svg{filter:drop-shadow(0 18px 28px rgba(37,99,235,.16))!important}
+.official-bd-svg [id$="_District"]{stroke:rgba(255,255,255,.78)!important;stroke-width:1.15!important;transition:fill .22s ease,filter .22s ease,transform .22s ease!important;transform-box:fill-box;transform-origin:center}
+.official-bd-svg [id$="_District"]:hover,.official-bd-svg [id$="_District"].selected{fill:#6d5dfc!important;filter:drop-shadow(0 0 9px rgba(109,93,252,.55))!important;transform:translateY(-1px)}
+.district-tooltip.official-tip{background:rgba(20,31,58,.82)!important;border:1px solid rgba(255,255,255,.24)!important;color:#fff!important;border-radius:14px!important;padding:10px 12px!important;box-shadow:0 14px 32px rgba(24,39,75,.24)!important;backdrop-filter:blur(16px)!important;pointer-events:none!important}
+.map-project-badge{background:linear-gradient(90deg,rgba(111,93,252,.9),rgba(42,185,218,.9))!important;color:#fff!important;border:1px solid rgba(255,255,255,.24)!important}
+.bd-map-legend{background:rgba(255,255,255,.24)!important;border:1px solid rgba(255,255,255,.36)!important;border-radius:999px!important;padding:7px 12px!important;width:max-content!important;max-width:calc(100% - 34px)!important;margin:auto!important;backdrop-filter:blur(12px)!important;color:var(--muted)!important}
+.bd-map-legend i{background:linear-gradient(135deg,#dcecff,#6d5dfc)!important;border:1px solid rgba(255,255,255,.75)!important}
+.bd-map-legend span:last-child i{background:rgba(221,235,248,.42)!important;border:1px solid rgba(255,255,255,.68)!important}
+.map-active-chip{background:rgba(255,255,255,.27)!important;border:1px solid rgba(255,255,255,.48)!important;color:var(--text)!important;backdrop-filter:blur(12px)!important;box-shadow:0 8px 22px rgba(47,108,168,.08)!important}
+.map-active-chip b{background:linear-gradient(135deg,#6d5dfc,#26b9d8)!important}
+.chart-box canvas{filter:drop-shadow(0 12px 22px rgba(77,99,220,.10))}
+html[data-theme-mode="dark"] .location-map-box,html[data-theme-mode="dark"] .chart-row .chart-box{background:linear-gradient(145deg,rgba(27,38,67,.62),rgba(18,26,48,.34))!important;border-color:rgba(255,255,255,.12)!important}
+html[data-theme-mode="dark"] .bd-map-stage.official{background:radial-gradient(circle at 50% 40%,rgba(83,106,185,.18),rgba(13,22,42,.18) 62%,transparent 85%)!important;border-color:rgba(255,255,255,.1)!important}
+</style>
 </head>
 <body>
 
@@ -13164,7 +13225,40 @@ function printProjectList(){
 .bd-map-legend{position:absolute;left:14px;bottom:12px;display:flex;gap:12px;color:var(--dim);font:600 9px var(--mono);letter-spacing:.06em}.bd-map-legend span{display:flex;align-items:center;gap:5px}.bd-map-legend i{width:8px;height:8px;border-radius:50%;background:#53d8ff;box-shadow:0 0 9px #53d8ff}.bd-map-legend span:last-child i{background:#55708d;box-shadow:none}
 .chart-box canvas{max-height:270px}.chart-box{background-image:linear-gradient(145deg,rgba(21,47,76,.9),rgba(18,29,62,.82));box-shadow:0 18px 45px rgba(0,0,0,.22)}
 @media(max-width:620px){.bd-map-stage{height:330px}.bd-map-stage svg{inset:8px 22px;width:calc(100% - 44px)}.location-map-box{min-height:400px}}
-</style></head><body>
+</style>
+<style id="modern-neutral-map-overrides">
+/* Clean, neutral analytics map */
+.location-map-box{background:#f8fafc!important;border:1px solid #e2e8f0!important;box-shadow:0 18px 45px rgba(15,23,42,.08)!important;}
+.location-map-box:before{display:none!important;}
+.location-map-box .panel-head h3{color:#0f172a!important;}
+.location-map-box .panel-kicker{color:#64748b!important;}
+.map-live-dot{color:#166534!important;background:#f0fdf4!important;border-color:#bbf7d0!important;box-shadow:none!important;}
+.bd-map-stage.official{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:18px 18px 54px;box-shadow:inset 0 1px 0 #fff;}
+.bd-map-stage.official .official-bd-svg{filter:drop-shadow(0 14px 22px rgba(15,23,42,.12))!important;}
+.official-bd-svg [id$="_District"]{opacity:1!important;fill:#e5e7eb!important;stroke:#ffffff!important;stroke-width:1.35!important;filter:none!important;}
+.official-bd-svg [id$="_District"].has-project{fill:#334155!important;filter:none!important;}
+.official-bd-svg [id$="_District"].hot{fill:#0f172a!important;filter:none!important;}
+.official-bd-svg [id$="_District"]:hover,.official-bd-svg [id$="_District"].selected{fill:#2563eb!important;filter:none!important;}
+.official-bd-svg text,.official-bd-svg [id*="Label"],.official-bd-svg [id*="label"]{display:none!important;}
+.bd-map-legend{left:22px!important;right:22px!important;bottom:16px!important;justify-content:center!important;gap:20px!important;color:#64748b!important;font:600 10px var(--mono)!important;}
+.bd-map-legend i{width:10px!important;height:10px!important;border-radius:3px!important;background:#334155!important;box-shadow:none!important;}
+.bd-map-legend span:last-child i{background:#e5e7eb!important;border:1px solid #cbd5e1!important;}
+.district-tooltip.official-tip{background:#0f172a!important;border:0!important;color:#fff!important;box-shadow:0 14px 30px rgba(15,23,42,.22)!important;}
+.map-project-badge{background:#dbeafe!important;color:#1d4ed8!important;}
+.map-active-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 0;padding:0 14px;}
+.map-active-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font:700 10px var(--mono);box-shadow:0 4px 14px rgba(15,23,42,.05);}
+.map-active-chip b{display:grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#0f172a;color:#fff;font-size:9px;}
+html[data-theme-mode="dark"] .location-map-box{background:#111827!important;border-color:#253047!important;}
+html[data-theme-mode="dark"] .location-map-box .panel-head h3{color:#f8fafc!important;}
+html[data-theme-mode="dark"] .location-map-box .panel-kicker{color:#94a3b8!important;}
+html[data-theme-mode="dark"] .bd-map-stage.official{background:#0f172a;border-color:#26344d;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"]{fill:#334155!important;stroke:#0f172a!important;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"].has-project{fill:#cbd5e1!important;}
+html[data-theme-mode="dark"] .official-bd-svg [id$="_District"].hot{fill:#f8fafc!important;}
+html[data-theme-mode="dark"] .map-active-chip{background:#111827;border-color:#334155;color:#e2e8f0;}
+@media(max-width:620px){.bd-map-stage.official{padding:12px 8px 58px}.bd-map-legend{gap:12px!important;font-size:9px!important}.map-active-list{padding:0 4px}}
+</style>
+</head><body>
     <div class="screen-tools"><button class="secondary" onclick="window.close()">${tx.close}</button><button class="primary" onclick="window.print()">${tx.print}</button></div>
     <main class="sheet">
       <header class="hero"><div class="brand">${logoSvg?`<div class="logo" aria-label="Avash logo">${logoSvg}</div>`:''}<div><div class="kicker">${tx.kicker}</div><h1>${tx.title}</h1></div></div><div class="generated">${tx.generated}<strong>${generatedAt}</strong></div></header>
@@ -13307,20 +13401,28 @@ function renderBangladeshMap(locMap){
  if(!template){host.innerHTML='<div class="empty">Map template পাওয়া যায়নি</div>';return;}
  const normalized={}; Object.entries(locMap||{}).forEach(([k,v])=>{const n=normalizeDistrict(k);normalized[n]=(normalized[n]||0)+v});
  const max=Math.max(1,...Object.values(normalized));
- host.innerHTML='<div class="bd-map-stage official"><div class="district-tooltip official-tip"></div><div class="bd-map-legend"><span><i></i>Project আছে</span><span><i></i>কোনো Project নেই</span></div></div>';
+ host.innerHTML='<div class="bd-map-stage official"><div class="district-tooltip official-tip"></div><div class="bd-map-legend"><span><i></i>Project location</span><span><i></i>No project</span></div></div><div class="map-active-list"></div>';
  const stage=host.querySelector('.bd-map-stage'); stage.insertBefore(template.content.cloneNode(true),stage.firstChild);
  const svg=stage.querySelector('svg'),tip=stage.querySelector('.district-tooltip');
  if(!svg)return;
+ const activeList=host.querySelector('.map-active-list');
+ const activeDistricts=Object.entries(normalized).filter(([k,v])=>k&&k!=='unspecified'&&v>0).sort((a,b)=>b[1]-a[1]);
+ if(activeList) activeList.innerHTML=activeDistricts.length?activeDistricts.map(([key,count])=>{const found=BD_DISTRICTS.find(d=>normalizeDistrict(d[0])===key);const name=found?found[0]:key.replace(/\b\w/g,c=>c.toUpperCase());return `<span class=\"map-active-chip\">${name}<b>${count}</b></span>`}).join(''):'<span class=\"map-active-chip\">No project locations for this year</span>';
  svg.removeAttribute('width');svg.removeAttribute('height');
  const bnByEn=Object.fromEntries(BD_DISTRICTS.map(d=>[normalizeDistrict(d[0]),d[1]]));
  svg.querySelectorAll('[id$="_District"]').forEach(el=>{
    const raw=el.id.replace(/_District$/,''); const canonical=SVG_DISTRICT_TO_CANONICAL[raw]||raw.replace(/_/g,' '); const key=normalizeDistrict(canonical); const count=normalized[key]||0;
    if(count)el.classList.add('has-project'); if(count===max&&count>0)el.classList.add('hot');
-   el.dataset.name=canonical;el.dataset.count=count;el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',`${canonical}: ${count} projects`);
-   const show=e=>{const r=stage.getBoundingClientRect();const er=el.getBoundingClientRect();const x=er.left-r.left+er.width/2;const y=er.top-r.top;tip.style.left=x+'px';tip.style.top=y+'px';tip.innerHTML=`<b>${canonical}</b> · ${bnByEn[key]||''}<br><span class="map-project-badge">${count} Project</span>`;tip.style.opacity='1'};
-   const hide=()=>tip.style.opacity='0';
+   const mix=(a,b,t)=>{const pa=a.match(/\w\w/g).map(x=>parseInt(x,16)),pb=b.match(/\w\w/g).map(x=>parseInt(x,16));return '#'+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+   const intensity=count?(.22+.78*(count/max)):0;
+   const baseFill=count?mix('#cfeeff','#6557ef',intensity):'rgba(218,235,249,.48)';
+   el.style.setProperty('fill',baseFill,'important');
+   el.style.setProperty('stroke','rgba(255,255,255,.82)','important');
+   el.dataset.name=canonical;el.dataset.count=count;el.dataset.baseFill=baseFill;el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',`${canonical}: ${count} projects`);
+   const show=()=>{el.style.setProperty('fill','#6d5dfc','important');const r=stage.getBoundingClientRect();const er=el.getBoundingClientRect();const x=er.left-r.left+er.width/2;const y=er.top-r.top;tip.style.left=x+'px';tip.style.top=y+'px';tip.innerHTML=`<b>${canonical}</b>${bnByEn[key]?` · ${bnByEn[key]}`:''}<br><span class="map-project-badge">${count} Project${count===1?'':'s'}</span>`;tip.style.opacity='1'};
+   const hide=()=>{if(!el.classList.contains('selected'))el.style.setProperty('fill',baseFill,'important');tip.style.opacity='0'};
    el.addEventListener('mouseenter',show);el.addEventListener('mouseleave',hide);el.addEventListener('focus',show);el.addEventListener('blur',hide);
-   el.addEventListener('click',()=>{svg.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const input=document.getElementById('f-location');if(input)input.value=canonical;show();});
+   el.addEventListener('click',()=>{svg.querySelectorAll('.selected').forEach(x=>{x.classList.remove('selected');x.style.setProperty('fill',x.dataset.baseFill||'rgba(218,235,249,.48)','important')});el.classList.add('selected');el.style.setProperty('fill','#6d5dfc','important');const input=document.getElementById('f-location');if(input)input.value=canonical;show();});
  });
 }
 
@@ -13340,7 +13442,7 @@ function renderStats(){
 
   const monthCounts = MONTHS.map((m,i)=>yearProjects.filter(p=>new Date(p.date).getMonth()===i).length);
   const pinkGlass = document.documentElement.dataset.theme === 'pink-glass';
-  const chartColors = pinkGlass ? ['#9a5cf5','#ff77c8','#7a62f1','#e876ff','#5c8cff','#ffb2df','#b46cff','#7fd6ff'] : ['#f2994a','#4fc38a','#56a2c2','#e2574c','#f2c94a','#9b6ef2','#f27ab0','#6ee7b7'];
+  const chartColors = ['rgba(101,87,239,.82)','rgba(80,123,238,.72)','rgba(54,163,218,.68)','rgba(50,196,201,.62)','rgba(126,108,240,.58)','rgba(72,145,220,.55)','rgba(103,196,224,.52)','rgba(151,132,245,.50)'];
 
   const storeyMap = {}; yearProjects.forEach(p=>{ const k=p.storey||'Unspecified'; storeyMap[k]=(storeyMap[k]||0)+1; });
   const locMap = {}; yearProjects.forEach(p=>{ const k=p.location||'Unspecified'; locMap[k]=(locMap[k]||0)+1; });
@@ -13362,8 +13464,8 @@ function renderStats(){
   if(chartStorey) chartStorey.destroy();
   chartStorey = new Chart(document.getElementById('chart-storey'), {
     type:'doughnut',
-    data:{labels:Object.keys(storeyMap), datasets:[{data:Object.values(storeyMap), backgroundColor:chartColors}]},
-    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
+    data:{labels:Object.keys(storeyMap), datasets:[{data:Object.values(storeyMap), backgroundColor:chartColors,borderColor:'rgba(255,255,255,.72)',borderWidth:2,hoverOffset:8}]},
+    options:{cutout:'68%',plugins:{legend:{position:'bottom', labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:16,font:{size:11}}},tooltip:{backgroundColor:'rgba(20,31,58,.86)',padding:12,cornerRadius:12,displayColors:true}}}
   });
 
   if(chartLocation){ chartLocation.destroy(); chartLocation=null; }
@@ -13372,8 +13474,8 @@ function renderStats(){
   if(chartStatus) chartStatus.destroy();
   chartStatus = new Chart(document.getElementById('chart-status'), {
     type:'doughnut',
-    data:{labels:Object.keys(statusMap), datasets:[{data:Object.values(statusMap), backgroundColor:['#e2574c','#f2c94a','#8fadc4','#4fc38a']}]},
-    options:{plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}}
+    data:{labels:Object.keys(statusMap), datasets:[{data:Object.values(statusMap), backgroundColor:['rgba(111,93,252,.82)','rgba(84,125,235,.68)','rgba(72,174,215,.58)','rgba(52,201,205,.72)'],borderColor:'rgba(255,255,255,.72)',borderWidth:2,hoverOffset:8}]},
+    options:{cutout:'70%',plugins:{legend:{position:'bottom', labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:16,font:{size:11}}},tooltip:{backgroundColor:'rgba(20,31,58,.86)',padding:12,cornerRadius:12,displayColors:true}}}
   });
 }
 
