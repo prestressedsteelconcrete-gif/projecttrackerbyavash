@@ -780,9 +780,9 @@ html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!importa
     <h1>PROJECT TRACKER BY AVASH</h1>
     <p>প্রতিমাসের প্রজেক্ট রেকর্ড ও পরিসংখ্যান</p>
     <input type="password" id="pw-input" placeholder="Password দিন" autocomplete="off">
-    <label class="auto-drive-label">
-      <input type="checkbox" id="auto-drive-check" checked>
-      ঢোকার সাথে সাথে Google Drive সংযুক্ত করার চেষ্টা করো
+    <label class="auto-drive-label" title="Google Drive শুধু Backup পেজের Connect বাটন চাপলে খুলবে">
+      <input type="checkbox" id="auto-drive-check" disabled>
+      Google Drive প্রয়োজন হলে Backup পেজ থেকে Connect করুন
     </label>
     <button class="btn" onclick="tryLogin()">প্রবেশ করুন</button>
     <div class="login-error" id="login-err"></div>
@@ -1133,7 +1133,7 @@ html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!importa
       <div class="card" style="margin-bottom:14px; border-color:var(--accent);">
         <h3 style="margin-top:0;font-family:var(--display);color:var(--accent);">Google Drive Auto-Save</h3>
         <p style="color:var(--dim);font-size:13px;line-height:1.6;">
-          একবার Connect করলে প্রতিটা Save/Delete-এর সাথে সাথেই ডেটা আপনার নিজের Google Drive-এ automatic সেভ হয়ে যাবে —
+          Connect করার পর বর্তমান Drive session চলাকালে প্রতিটা Save/Delete-এর সাথে ডেটা আপনার নিজের Google Drive-এ automatic সেভ হবে —
           আর বার বার JSON Export/Import করতে হবে না। প্রথমবার ব্যবহারের আগে নিচের এক-বারের সেটআপ করতে হবে
           (চ্যাটে বিস্তারিত ধাপ দেওয়া আছে)।
         </p>
@@ -12773,9 +12773,9 @@ function tryLogin(){
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
     document.getElementById('glass-dock').style.display='flex';
-    const autoDrive = document.getElementById('auto-drive-check').checked;
     initApp();
-    if(autoDrive) attemptDriveConnect(true);
+    // Google login popup is never opened automatically.
+    // Drive authorization only starts after the user clicks “Connect Google Drive”.
   } else {
     document.getElementById('login-err').textContent = 'পাসওয়ার্ড সঠিক নয়।';
   }
@@ -13851,16 +13851,21 @@ function connectDrive(){
   attemptDriveConnect(false);
 }
 function attemptDriveConnect(silent){
+  // Silent/background authorization is deliberately disabled because browsers may
+  // flash an account chooser repeatedly. Authorization is allowed only from a
+  // direct click on the Connect Google Drive button.
+  if(silent) return;
   if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('PASTE_YOUR_GOOGLE_CLIENT_ID')){
-    if(!silent) alert('প্রথমে HTML ফাইলের ভিতরে GOOGLE_CLIENT_ID বসাতে হবে (নিজের Google Cloud Console থেকে নিন), এবং ফাইলটি http/https থেকে খুলতে হবে।');
+    alert('প্রথমে HTML ফাইলের ভিতরে GOOGLE_CLIENT_ID বসাতে হবে (নিজের Google Cloud Console থেকে নিন), এবং ফাইলটি http/https থেকে খুলতে হবে।');
     return;
   }
   if(!window.google || !google.accounts){
-    if(!silent) alert('Google লগইন স্ক্রিপ্ট এখনও লোড হয়নি, কয়েক সেকেন্ড পর আবার চেষ্টা করুন। (ইন্টারনেট সংযোগ যাচাই করুন)');
+    alert('Google লগইন স্ক্রিপ্ট এখনও লোড হয়নি, কয়েক সেকেন্ড পর আবার চেষ্টা করুন। (ইন্টারনেট সংযোগ যাচাই করুন)');
     return;
   }
   if(!gTokenClient) initGoogleClient();
-  gTokenClient.requestAccessToken({prompt: silent ? 'none' : ''});
+  if(!gTokenClient) return;
+  gTokenClient.requestAccessToken({prompt: 'select_account'});
 }
 /* Google's access token expires (usually in 1 hour). Instead of letting it die silently
    mid-session and looking like a random "logout", we quietly ask for a fresh one a bit
@@ -13868,9 +13873,12 @@ function attemptDriveConnect(silent){
 let gTokenRefreshTimer = null;
 function scheduleTokenRefresh(expiresInSeconds){
   clearTimeout(gTokenRefreshTimer);
-  const ms = Math.max((Number(expiresInSeconds || 3300) - 300) * 1000, 30000); // refresh 5 min before expiry
+  const ms = Math.max((Number(expiresInSeconds || 3300) - 120) * 1000, 30000);
   gTokenRefreshTimer = setTimeout(()=>{
-    if(gTokenClient) gTokenClient.requestAccessToken({prompt:''});
+    // Never reopen Google authorization in the background.
+    gAccessToken = null;
+    gDriveFileId = null;
+    setDriveStatus('Drive session শেষ হয়েছে — আবার Connect Google Drive চাপুন।', false);
   }, ms);
 }
 function setDriveStatus(msg, connected){
@@ -13887,13 +13895,11 @@ function setDriveStatus(msg, connected){
 /* Called whenever a Drive API call comes back 401 (token expired/revoked) — rather than
    failing silently, try one silent re-auth; only bother the user if that also fails. */
 function handleDriveAuthError(){
+  // Do not trigger a popup from a failed API request. Let the user reconnect manually.
   gAccessToken = null;
-  setDriveStatus('সংযোগ বিচ্ছিন্ন হয়েছে, আবার সংযুক্ত করা হচ্ছে...', false);
-  if(gTokenClient){
-    gTokenClient.requestAccessToken({prompt:''});
-  } else {
-    setDriveStatus('সংযুক্ত নয় — "Connect Google Drive" চাপুন।', false);
-  }
+  gDriveFileId = null;
+  clearTimeout(gTokenRefreshTimer);
+  setDriveStatus('Drive সংযোগ শেষ হয়েছে — আবার "Connect Google Drive" চাপুন।', false);
 }
 async function findOrCreateDriveFile(){
   try{
