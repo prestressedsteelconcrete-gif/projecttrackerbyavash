@@ -165,6 +165,10 @@ tr:hover td{background:rgba(242,153,74,0.04);}
 .badge.progress{color:var(--warn);border-color:var(--warn);}
 .badge.pending{color:var(--dim);}
 .badge.notstarted{color:var(--danger);border-color:var(--danger);}
+.revision-badge{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:4px 10px;border-radius:999px;border:1px solid currentColor;background:color-mix(in srgb,currentColor 8%,transparent);font:700 9px var(--mono);letter-spacing:.04em;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;}
+.revision-badge:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.16);}
+.revision-badge.yes{color:var(--ok);}
+.revision-badge.no{color:var(--danger);}
 
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .field{display:flex;flex-direction:column;gap:6px;}
@@ -780,9 +784,9 @@ html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!importa
     <h1>PROJECT TRACKER BY AVASH</h1>
     <p>প্রতিমাসের প্রজেক্ট রেকর্ড ও পরিসংখ্যান</p>
     <input type="password" id="pw-input" placeholder="Password দিন" autocomplete="off">
-    <label class="auto-drive-label" title="Google Drive শুধু Backup পেজের Connect বাটন চাপলে খুলবে">
-      <input type="checkbox" id="auto-drive-check" disabled>
-      Google Drive প্রয়োজন হলে Backup পেজ থেকে Connect করুন
+    <label class="auto-drive-label" title="লগইন সফল হলে Google Drive একবার স্বয়ংক্রিয়ভাবে সংযুক্ত হবে">
+      <input type="checkbox" id="auto-drive-check" checked disabled>
+      ঢোকার সাথে সাথে Google Drive সংযুক্ত করার চেষ্টা করো
     </label>
     <button class="btn" onclick="tryLogin()">প্রবেশ করুন</button>
     <div class="login-error" id="login-err"></div>
@@ -952,6 +956,7 @@ html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!importa
           <div class="field"><label>Plan</label><input type="text" id="f-plan" placeholder="Plan বিবরণ"></div>
           <div class="field"><label>3D Receive Date</label><input type="date" id="f-3d-date"></div>
           <div class="field full"><label>Plan Issues</label><input type="text" id="f-planissues"></div>
+          <div class="field"><label>Print Section Revised</label><select id="f-print-revised"><option value="no">No</option><option value="yes">Yes</option></select></div>
         </div>
 
         <div class="section-title">কাজের অবস্থা (কে করেছে, কবে রিসিভ করেছে, কবে শেষ করেছে)</div>
@@ -1036,13 +1041,18 @@ html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!importa
           <option value="red">শুধু লাল (সতর্কতা)</option>
           <option value="green">শুধু সবুজ</option>
         </select>
+        <select id="filt-revised" onchange="renderList()">
+          <option value="">সব Revised</option>
+          <option value="yes">Yes — Revised</option>
+          <option value="no">No — Not Revised</option>
+        </select>
         <input type="date" id="filt-from" onchange="renderList()">
         <input type="date" id="filt-to" onchange="renderList()">
       </div>
       <div class="card">
         <div class="table-scroll">
         <table>
-          <thead><tr><th></th><th>তারিখ</th><th>#</th><th>Client</th><th>Storey</th><th>Location</th><th>Engineer</th><th>Struct.</th><th>Arch.</th><th>Elec.</th><th>Plumb.</th><th></th></tr></thead>
+          <thead><tr><th></th><th>তারিখ</th><th>#</th><th>Client</th><th>Storey</th><th>Location</th><th>Engineer</th><th>Struct.</th><th>Arch.</th><th>Elec.</th><th>Plumb.</th><th>Revised</th><th></th></tr></thead>
           <tbody id="list-table-body"></tbody>
         </table>
         </div>
@@ -12412,6 +12422,13 @@ const I18N_TEXT = {
   'Client / Project Name':['Client / Project Name','ক্লায়েন্ট / প্রজেক্টের নাম'],
   'সব Status':['All Statuses','সব অবস্থা'],
   'সব সংকেত':['All Signals','সব সংকেত'],
+  'Print Section Revised':['Print Section Revised','প্রিন্ট সেকশন রিভাইজড'],
+  'Revised':['Revised','রিভাইজড'],
+  'সব Revised':['All Revised','সব রিভাইজড'],
+  'Yes — Revised':['Yes — Revised','হ্যাঁ — রিভাইজড'],
+  'No — Not Revised':['No — Not Revised','না — রিভাইজড নয়'],
+  'Yes':['Yes','হ্যাঁ'],
+  'No':['No','না'],
   'শুধু লাল (সতর্কতা)':['Red only (alert)','শুধু লাল (সতর্কতা)'],
   'শুধু সবুজ':['Green only','শুধু সবুজ'],
   'কোনো ফলাফল পাওয়া যায়নি।':['No results found.','কোনো ফলাফল পাওয়া যায়নি।'],
@@ -12765,6 +12782,8 @@ let gAccessToken = null;
 let gDriveFileId = null;
 let gAutoSaveTimer = null;
 let gLastSavedAt = null;
+let gAutoDriveAttemptedThisLogin = false;
+let gDriveConnectInProgress = false;
 
 /* ================= LOGIN ================= */
 function tryLogin(){
@@ -12774,8 +12793,9 @@ function tryLogin(){
     document.getElementById('app').style.display='block';
     document.getElementById('glass-dock').style.display='flex';
     initApp();
-    // Google login popup is never opened automatically.
-    // Drive authorization only starts after the user clicks “Connect Google Drive”.
+    // The password button is a user gesture, so start exactly one Drive authorization
+    // attempt here. Background saves/token errors never open another popup.
+    autoConnectDriveAfterLogin();
   } else {
     document.getElementById('login-err').textContent = 'পাসওয়ার্ড সঠিক নয়।';
   }
@@ -12789,6 +12809,8 @@ function logout(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('pw-input').value='';
   document.getElementById('login-err').textContent='';
+  gAutoDriveAttemptedThisLogin = false;
+  gDriveConnectInProgress = false;
 }
 
 /* ================= INIT ================= */
@@ -13013,6 +13035,7 @@ function resetForm(){
   });
   document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
   document.getElementById('f-flag-image').value = '';
+  document.getElementById('f-print-revised').value = 'no';
   flagColor = 'green';
   flagImageData = '';
   updateFlagLightUI();
@@ -13079,6 +13102,7 @@ function saveProject(){
     plan: document.getElementById('f-plan').value.trim(),
     d3date: document.getElementById('f-3d-date').value,
     planissues: document.getElementById('f-planissues').value.trim(),
+    printSectionRevised: document.getElementById('f-print-revised').value === 'yes',
     structural: getDiscipline('structural'),
     architectural: getDiscipline('architectural'),
     electrical: getDiscipline('electrical'),
@@ -13129,6 +13153,7 @@ function editProject(id){
   document.getElementById('f-plan').value = p.plan;
   document.getElementById('f-3d-date').value = p.d3date;
   document.getElementById('f-planissues').value = p.planissues;
+  document.getElementById('f-print-revised').value = isPrintRevised(p) ? 'yes' : 'no';
   DISCIPLINES.forEach(k=>{
     const d = p[k] || {};
     document.getElementById(`f-${k}-doneby`).value = d.doneBy || '';
@@ -13174,6 +13199,7 @@ function getFilteredProjects(){
   const storey = (document.getElementById('filt-storey')?.value || '').toLowerCase().trim();
   const status = document.getElementById('filt-status')?.value || '';
   const flagFilter = document.getElementById('filt-flag')?.value || '';
+  const revisedFilter = document.getElementById('filt-revised')?.value || '';
   const from = document.getElementById('filt-from')?.value || '';
   const to = document.getElementById('filt-to')?.value || '';
 
@@ -13193,10 +13219,30 @@ function getFilteredProjects(){
     if(storey && !(p.storey || '').toLowerCase().includes(storey)) return false;
     if(status && !DISCIPLINES.some(k=>p[k] && p[k].status===status)) return false;
     if(flagFilter && (!p.flag || p.flag.color !== flagFilter)) return false;
+    if(revisedFilter && (isPrintRevised(p) ? 'yes' : 'no') !== revisedFilter) return false;
     if(from && (p.date || '') < from) return false;
     if(to && (p.date || '') > to) return false;
     return true;
   }).sort((a,b)=> new Date(b.date || 0)-new Date(a.date || 0));
+}
+
+function isPrintRevised(p){
+  const value = p ? p.printSectionRevised : false;
+  return value === true || String(value || '').toLowerCase() === 'yes';
+}
+function revisionBadge(p){
+  const revised = isPrintRevised(p);
+  const label = revised ? 'Yes' : 'No';
+  const title = revised ? 'Print section revised — click to set No' : 'Print section not revised — click to set Yes';
+  return `<button type="button" class="revision-badge ${revised?'yes':'no'}" onclick="togglePrintRevision('${p.id}')" title="${title}" aria-label="${title}">${label}</button>`;
+}
+function togglePrintRevision(id){
+  const p = projects.find(item=>item.id===id);
+  if(!p) return;
+  p.printSectionRevised = !isPrintRevised(p);
+  renderList();
+  if(currentModalId===id && document.getElementById('modal-bg')?.style.display==='flex') openModal(id);
+  scheduleAutoSave();
 }
 
 function renderList(){
@@ -13218,6 +13264,7 @@ function renderList(){
       <td>${statusBadge(p.architectural.status)}</td>
       <td>${statusBadge(p.electrical.status)}</td>
       <td>${statusBadge(p.plumbing.status)}</td>
+      <td>${revisionBadge(p)}</td>
       <td class="action-icons">
         <span onclick="editProject('${p.id}')">Edit</span>
         <span onclick="deleteProject('${p.id}')">Del</span>
@@ -13232,11 +13279,11 @@ function printProjectList(){
   const lang = currentLanguage==='en'?'en':'bn';
   const tx = lang==='en' ? {
     title:'Project Portfolio Report', kicker:'PROJECT TRACKER BY AVASH', generated:'Generated', total:'Total Projects', completed:'Completed', active:'Active / Pending', flagged:'Alerts',
-    no:'Project #', project:'Client / Project', storey:'Storey', location:'Location', engineer:'Engineer', received:'Received', submission:'Submission', status:'Status', empty:'No projects found.',
+    no:'Project #', project:'Client / Project', storey:'Storey', location:'Location', engineer:'Engineer', received:'Received', submission:'Submission', status:'Status', revised:'Revised', yes:'Yes', noValue:'No', empty:'No projects found.',
     print:'Print Report', close:'Close', footer:'Confidential project operations report'
   } : {
     title:'প্রজেক্ট পোর্টফোলিও রিপোর্ট', kicker:'PROJECT TRACKER BY AVASH', generated:'রিপোর্ট তৈরি', total:'মোট প্রজেক্ট', completed:'সম্পন্ন', active:'চলমান / অপেক্ষমাণ', flagged:'সতর্কতা',
-    no:'প্রজেক্ট #', project:'ক্লায়েন্ট / প্রজেক্ট', storey:'তলা', location:'লোকেশন', engineer:'ইঞ্জিনিয়ার', received:'রিসিভ', submission:'সাবমিশন', status:'অবস্থা', empty:'কোনো প্রজেক্ট পাওয়া যায়নি।',
+    no:'প্রজেক্ট #', project:'ক্লায়েন্ট / প্রজেক্ট', storey:'তলা', location:'লোকেশন', engineer:'ইঞ্জিনিয়ার', received:'রিসিভ', submission:'সাবমিশন', status:'অবস্থা', revised:'রিভাইজড', yes:'হ্যাঁ', noValue:'না', empty:'কোনো প্রজেক্ট পাওয়া যায়নি।',
     print:'রিপোর্ট প্রিন্ট করুন', close:'বন্ধ করুন', footer:'গোপনীয় প্রজেক্ট অপারেশনস রিপোর্ট'
   };
   const completed = rows.filter(p=>overallStatus(p)==='Done').length;
@@ -13262,6 +13309,7 @@ function printProjectList(){
       <td>${reportDate(p.received)}</td>
       <td>${reportDate(p.submission)}</td>
       <td><span class="status ${statusClass}">${esc(localizedStatus(rawStatus,lang))}</span></td>
+      <td><span class="revision ${isPrintRevised(p)?'yes':'no'}">${isPrintRevised(p)?tx.yes:tx.noValue}</span></td>
     </tr>`;
   }).join('');
   const html = `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">
@@ -13277,7 +13325,7 @@ function printProjectList(){
       .brand{position:relative;z-index:1;display:flex;align-items:center;gap:16px}.logo{width:64px;height:64px;display:grid;place-items:center;border-radius:17px;background:#fff;padding:8px;color:#3428bd;box-shadow:0 12px 32px rgba(0,0,0,.18)}.logo svg{width:100%;height:100%;display:block}
       .kicker{font-size:10px;letter-spacing:.21em;font-weight:800;opacity:.8;margin-bottom:6px}.hero h1{font-size:27px;line-height:1.15;margin:0;letter-spacing:-.03em}.generated{position:relative;z-index:1;text-align:right;font-size:11px;line-height:1.65;opacity:.9}.generated strong{display:block;font-size:13px;color:#fff}
       .content{padding:24px 30px 28px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}.metric{border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:linear-gradient(180deg,#fff,var(--soft))}.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.09em;font-weight:800}.metric strong{display:block;margin-top:5px;font-size:23px;letter-spacing:-.04em}.metric.alert strong{color:var(--danger)}
-      .table-wrap{overflow:hidden;border:1px solid var(--line);border-radius:17px}table{width:100%;border-collapse:collapse;font-size:10.5px}thead{display:table-header-group}th{padding:11px 10px;background:#eef2f8;color:#344054;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.065em;border-bottom:1px solid var(--line)}td{padding:11px 10px;border-bottom:1px solid #e9edf3;vertical-align:middle}tbody tr:nth-child(even){background:#fafbfc}tbody tr:last-child td{border-bottom:0}.row-index{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-right:7px;border-radius:8px;background:#edeaff;color:#4b3fd0;font-size:9px;font-weight:800}.project-name{font-weight:750;max-width:210px}.status{display:inline-block;white-space:nowrap;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800}.status.done{background:#dcfae6;color:var(--ok)}.status.progress{background:#e0f2fe;color:#026aa2}.status.pending{background:#fef0c7;color:var(--warn)}.status.notstarted{background:#f2f4f7;color:#475467}.empty{text-align:center;padding:34px!important;color:var(--muted)}
+      .table-wrap{overflow:hidden;border:1px solid var(--line);border-radius:17px}table{width:100%;border-collapse:collapse;font-size:10.5px}thead{display:table-header-group}th{padding:11px 10px;background:#eef2f8;color:#344054;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.065em;border-bottom:1px solid var(--line)}td{padding:11px 10px;border-bottom:1px solid #e9edf3;vertical-align:middle}tbody tr:nth-child(even){background:#fafbfc}tbody tr:last-child td{border-bottom:0}.row-index{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-right:7px;border-radius:8px;background:#edeaff;color:#4b3fd0;font-size:9px;font-weight:800}.project-name{font-weight:750;max-width:210px}.status{display:inline-block;white-space:nowrap;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800}.status.done{background:#dcfae6;color:var(--ok)}.status.progress{background:#e0f2fe;color:#026aa2}.status.pending{background:#fef0c7;color:var(--warn)}.status.notstarted{background:#f2f4f7;color:#475467}.revision{display:inline-block;min-width:38px;text-align:center;white-space:nowrap;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800}.revision.yes{background:#dcfae6;color:var(--ok)}.revision.no{background:#fee4e2;color:var(--danger)}.empty{text-align:center;padding:34px!important;color:var(--muted)}
       .report-footer{display:flex;justify-content:space-between;align-items:center;padding:14px 30px 18px;color:#667085;font-size:9px;border-top:1px solid #eef1f5}.report-footer strong{color:#344054}
       @page{size:A4 landscape;margin:9mm} @media print{body{background:#fff}.screen-tools{display:none}.sheet{width:100%;margin:0;border-radius:0;box-shadow:none}.hero{padding:18px 22px}.logo{width:52px;height:52px}.hero h1{font-size:22px}.content{padding:16px 18px}.summary{gap:8px;margin-bottom:13px}.metric{padding:9px 12px;border-radius:11px}.metric strong{font-size:18px}table{font-size:8.6px}th{padding:8px 7px;font-size:7.6px}td{padding:8px 7px}.row-index{width:19px;height:19px;margin-right:4px}.status{font-size:7.5px;padding:4px 6px}.report-footer{padding:10px 18px}.sheet,.table-wrap,.metric{break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}}
       @media(max-width:800px){.summary{grid-template-columns:repeat(2,1fr)}.hero{align-items:flex-start}.generated{display:none}.content{padding:18px 14px}.sheet{width:calc(100% - 16px)}}
@@ -13337,7 +13385,7 @@ html[data-theme-mode="dark"] .map-active-chip{background:#111827;border-color:#3
       <header class="hero"><div class="brand">${logoSvg?`<div class="logo" aria-label="Avash logo">${logoSvg}</div>`:''}<div><div class="kicker">${tx.kicker}</div><h1>${tx.title}</h1></div></div><div class="generated">${tx.generated}<strong>${generatedAt}</strong></div></header>
       <section class="content">
         <div class="summary"><div class="metric"><span>${tx.total}</span><strong>${rows.length}</strong></div><div class="metric"><span>${tx.completed}</span><strong>${completed}</strong></div><div class="metric"><span>${tx.active}</span><strong>${active}</strong></div><div class="metric alert"><span>${tx.flagged}</span><strong>${flagged}</strong></div></div>
-        <div class="table-wrap"><table><thead><tr><th>${tx.no}</th><th>${tx.project}</th><th>${tx.storey}</th><th>${tx.location}</th><th>${tx.engineer}</th><th>${tx.received}</th><th>${tx.submission}</th><th>${tx.status}</th></tr></thead><tbody>${tableRows||`<tr><td class="empty" colspan="8">${tx.empty}</td></tr>`}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>${tx.no}</th><th>${tx.project}</th><th>${tx.storey}</th><th>${tx.location}</th><th>${tx.engineer}</th><th>${tx.received}</th><th>${tx.submission}</th><th>${tx.status}</th><th>${tx.revised}</th></tr></thead><tbody>${tableRows||`<tr><td class="empty" colspan="9">${tx.empty}</td></tr>`}</tbody></table></div>
       </section>
       <footer class="report-footer"><span>${tx.footer}</span><strong>© ${new Date().getFullYear()} Avash</strong></footer>
     </main></body></html>`;
@@ -13395,6 +13443,7 @@ function openModal(id){
       <div class="field"><label>Plan</label><div>${esc(p.plan)||'-'}</div></div>
       <div class="field"><label>3D Receive Date</label><div>${fmtDate(p.d3date)}</div></div>
       <div class="field full"><label>Plan Issues</label><div>${esc(p.planissues)||'-'}</div></div>
+      <div class="field"><label>Print Section Revised</label><div>${revisionBadge(p)}</div></div>
     </div>
     <div class="section-title">কাজের অবস্থা</div>
     <div class="table-scroll">
@@ -13836,40 +13885,67 @@ function initGoogleClient(){
     client_id: GOOGLE_CLIENT_ID,
     scope: DRIVE_SCOPE,
     callback: async (resp)=>{
+      gDriveConnectInProgress = false;
       if(resp.error){
-        setDriveStatus('সংযোগ ব্যর্থ হয়েছে — Client ID / Authorized Origin ঠিক আছে কিনা দেখুন।', false);
+        setDriveStatus('Google Drive সংযোগ সম্পন্ন হয়নি — Backup পেজ থেকে আবার Connect করা যাবে।', false);
         return;
       }
       gAccessToken = resp.access_token;
       scheduleTokenRefresh(resp.expires_in);
       setDriveStatus('সংযুক্ত হয়েছে — ফাইল খোঁজা হচ্ছে...', true);
       await findOrCreateDriveFile();
+    },
+    error_callback: ()=>{
+      gDriveConnectInProgress = false;
+      setDriveStatus('Google Drive popup বন্ধ হয়েছে বা খোলা যায়নি — Backup পেজ থেকে আবার Connect করা যাবে।', false);
     }
   });
+}
+function autoConnectDriveAfterLogin(){
+  if(gAccessToken){
+    refreshDriveStatus();
+    return;
+  }
+  if(gAutoDriveAttemptedThisLogin || gDriveConnectInProgress) return;
+  gAutoDriveAttemptedThisLogin = true;
+  attemptDriveConnect(true);
 }
 function connectDrive(){
   attemptDriveConnect(false);
 }
-function attemptDriveConnect(silent){
-  // Silent/background authorization is deliberately disabled because browsers may
-  // flash an account chooser repeatedly. Authorization is allowed only from a
-  // direct click on the Connect Google Drive button.
-  if(silent) return;
+function attemptDriveConnect(isAutoLoginAttempt = false){
+  // Auto-connect is allowed exactly once from the password-login click.
+  // Timer, save, API-error and status-check code paths never call this function.
+  if(gAccessToken){
+    refreshDriveStatus();
+    return;
+  }
+  if(gDriveConnectInProgress) return;
   if(!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('PASTE_YOUR_GOOGLE_CLIENT_ID')){
-    alert('প্রথমে HTML ফাইলের ভিতরে GOOGLE_CLIENT_ID বসাতে হবে (নিজের Google Cloud Console থেকে নিন), এবং ফাইলটি http/https থেকে খুলতে হবে।');
+    const msg = 'প্রথমে HTML ফাইলের ভিতরে GOOGLE_CLIENT_ID বসাতে হবে (নিজের Google Cloud Console থেকে নিন), এবং ফাইলটি http/https থেকে খুলতে হবে।';
+    if(isAutoLoginAttempt) setDriveStatus(msg, false); else alert(msg);
     return;
   }
   if(!window.google || !google.accounts){
-    alert('Google লগইন স্ক্রিপ্ট এখনও লোড হয়নি, কয়েক সেকেন্ড পর আবার চেষ্টা করুন। (ইন্টারনেট সংযোগ যাচাই করুন)');
+    const msg = 'Google লগইন স্ক্রিপ্ট এখনও লোড হয়নি। Backup পেজ থেকে Connect Google Drive চাপুন।';
+    if(isAutoLoginAttempt) setDriveStatus(msg, false); else alert(msg);
     return;
   }
   if(!gTokenClient) initGoogleClient();
   if(!gTokenClient) return;
-  gTokenClient.requestAccessToken({prompt: 'select_account'});
+  gDriveConnectInProgress = true;
+  try{
+    // Empty prompt reuses the signed-in Google account when possible; manual Connect
+    // deliberately shows the account chooser. Either path can run only once at a time.
+    gTokenClient.requestAccessToken({prompt: isAutoLoginAttempt ? '' : 'select_account'});
+  }catch(err){
+    gDriveConnectInProgress = false;
+    const msg = 'Google Drive popup খোলা যায়নি — Backup পেজ থেকে আবার Connect করুন।';
+    if(isAutoLoginAttempt) setDriveStatus(msg, false); else alert(msg);
+  }
 }
-/* Google's access token expires (usually in 1 hour). Instead of letting it die silently
-   mid-session and looking like a random "logout", we quietly ask for a fresh one a bit
-   before it expires — no popup/consent screen needed since access was already granted. */
+/* Google's access token expires after a while. We intentionally do not request a new
+   token in the background, because that can reopen the OAuth popup during the same login. */
 let gTokenRefreshTimer = null;
 function scheduleTokenRefresh(expiresInSeconds){
   clearTimeout(gTokenRefreshTimer);
@@ -13892,8 +13968,8 @@ function setDriveStatus(msg, connected){
   if(mobileDot) mobileDot.classList.toggle('connected', !!connected);
   document.documentElement.dataset.driveConnected = connected ? 'true' : 'false';
 }
-/* Called whenever a Drive API call comes back 401 (token expired/revoked) — rather than
-   failing silently, try one silent re-auth; only bother the user if that also fails. */
+/* Called whenever a Drive API call comes back 401 (token expired/revoked).
+   It updates the status only; it never opens another popup in the current login. */
 function handleDriveAuthError(){
   // Do not trigger a popup from a failed API request. Let the user reconnect manually.
   gAccessToken = null;
