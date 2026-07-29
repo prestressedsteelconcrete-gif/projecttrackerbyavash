@@ -701,6 +701,58 @@ html[data-theme-mode="dark"] .map-active-chip{background:#111827;border-color:#3
 html[data-theme-mode="dark"] .location-map-box,html[data-theme-mode="dark"] .chart-row .chart-box{background:linear-gradient(145deg,rgba(27,38,67,.62),rgba(18,26,48,.34))!important;border-color:rgba(255,255,255,.12)!important}
 html[data-theme-mode="dark"] .bd-map-stage.official{background:radial-gradient(circle at 50% 40%,rgba(83,106,185,.18),rgba(13,22,42,.18) 62%,transparent 85%)!important;border-color:rgba(255,255,255,.1)!important}
 </style>
+
+<style id="analytics-functionality-fixes">
+/* Map, chart and quick-search fixes */
+.global-search{position:relative;transition:box-shadow .22s ease,transform .22s ease,background .22s ease;border-radius:14px}
+.global-search.search-active{background:color-mix(in srgb,var(--panel2) 82%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 24%,transparent),0 16px 36px color-mix(in srgb,var(--accent) 16%,transparent);transform:translateY(-1px)}
+.global-search.search-active .search-mark{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+
+.chart-row .chart-box{position:relative;overflow:hidden;min-height:350px}
+.chart-row .chart-box::after{content:"";position:absolute;inset:auto -70px -90px auto;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent2) 13%,transparent),transparent 68%);pointer-events:none}
+.chart-row .chart-box h3{position:relative;z-index:1;font-size:14px;letter-spacing:-.01em}
+.chart-row .chart-box canvas{position:relative;z-index:1;max-height:300px!important}
+#view-time .chart-row{grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr)}
+#view-time .chart-box{min-height:390px}
+#view-time .chart-box canvas{max-height:325px!important}
+@media(max-width:980px){#view-time .chart-row{grid-template-columns:1fr}}
+
+.location-map-box{overflow:hidden!important}
+.bd-project-map{background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(227,240,255,.12))!important;border:1px solid rgba(255,255,255,.48)!important;border-radius:22px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 18px 44px rgba(49,91,157,.10)!important}
+.bd-map-stage.official{padding:18px 18px 66px!important;background:radial-gradient(circle at 48% 42%,rgba(255,255,255,.72),rgba(226,239,255,.24) 54%,transparent 82%)!important}
+.official-bd-svg [id$="_District"]{
+  fill:var(--district-fill,#e7eef8)!important;
+  stroke:rgba(255,255,255,.94)!important;
+  stroke-width:1.25!important;
+  opacity:1!important;
+  vector-effect:non-scaling-stroke;
+  cursor:pointer;
+  filter:drop-shadow(0 1px 0 rgba(31,56,96,.05))!important;
+  transition:fill .2s ease,filter .2s ease,transform .2s ease!important;
+  transform-box:fill-box;transform-origin:center;
+}
+.official-bd-svg [id$="_District"].has-project{fill:var(--district-fill,#60a5fa)!important;filter:drop-shadow(0 4px 7px rgba(37,99,235,.20))!important}
+.official-bd-svg [id$="_District"].hot{fill:var(--district-fill,#4f46e5)!important;filter:drop-shadow(0 6px 11px rgba(79,70,229,.34))!important}
+.official-bd-svg [id$="_District"]:hover,.official-bd-svg [id$="_District"].selected{fill:#7c3aed!important;filter:drop-shadow(0 0 12px rgba(124,58,237,.48))!important;transform:translateY(-1.5px) scale(1.012)}
+.bd-map-legend{left:50%!important;right:auto!important;bottom:13px!important;transform:translateX(-50%);display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:8px 13px!important;width:max-content!important;max-width:calc(100% - 24px)!important;padding:8px 12px!important;background:rgba(255,255,255,.62)!important;border:1px solid rgba(255,255,255,.86)!important;border-radius:999px!important;box-shadow:0 10px 26px rgba(31,73,125,.10)!important;color:#5f7188!important;backdrop-filter:blur(16px)!important}
+.bd-map-legend span{white-space:nowrap}
+.bd-map-legend i{width:10px!important;height:10px!important;border-radius:3px!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.9)!important}
+.bd-map-legend .map-l0 i{background:#e7eef8!important;border-color:#cbd8e8!important}
+.bd-map-legend .map-l1 i{background:#93c5fd!important}
+.bd-map-legend .map-l2 i{background:#3b82f6!important}
+.bd-map-legend .map-l3 i{background:#4f46e5!important}
+.map-active-list{margin-top:13px!important}
+.map-active-chip{cursor:default;transition:transform .18s ease,box-shadow .18s ease!important}
+.map-active-chip:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(47,90,158,.14)!important}
+.map-active-chip b{background:linear-gradient(135deg,#2563eb,#7c3aed)!important}
+.district-tooltip.official-tip{min-width:152px!important;text-align:left!important}
+html[data-theme-mode="dark"] .bd-project-map{background:linear-gradient(160deg,rgba(30,41,68,.72),rgba(15,23,42,.45))!important;border-color:rgba(255,255,255,.11)!important}
+html[data-theme-mode="dark"] .bd-map-stage.official{background:radial-gradient(circle at 48% 42%,rgba(80,107,170,.17),rgba(15,23,42,.10) 60%,transparent 84%)!important}
+html[data-theme-mode="dark"] .bd-map-legend{background:rgba(17,24,39,.72)!important;border-color:rgba(255,255,255,.12)!important;color:#b8c5d6!important}
+html[data-theme-mode="dark"] .bd-map-legend .map-l0 i{background:#27364c!important;border-color:#42536d!important}
+@media(max-width:620px){.bd-map-stage.official{padding:10px 6px 78px!important}.bd-map-legend{border-radius:16px!important;width:calc(100% - 18px)!important}.chart-row .chart-box{min-height:320px}}
+</style>
+
 </head>
 <body>
 
@@ -12895,6 +12947,21 @@ function runGlobalSearch(){
   if(nameFilter && nameFilter.value !== q) nameFilter.value = q;
   renderList();
 }
+function openQuickSearch(){
+  if(document.body.classList.contains('focus-mode')) toggleFocusMode();
+  switchView('list');
+  jumpToTop();
+  const input=document.getElementById('global-project-search');
+  const wrap=input?.closest('.global-search');
+  wrap?.classList.add('search-active');
+  setTimeout(()=>{
+    input?.focus({preventScroll:true});
+    input?.select();
+  },220);
+  clearTimeout(openQuickSearch._timer);
+  openQuickSearch._timer=setTimeout(()=>wrap?.classList.remove('search-active'),2200);
+  showAppToast(currentLanguage==='bn'?'সার্চ বক্স প্রস্তুত — লিখে খুঁজুন।':'Search is ready — start typing.');
+}
 
 function updateUtilityDate(){
   const day = document.getElementById('utility-day');
@@ -13033,6 +13100,12 @@ function saveProject(){
   } else {
     projects.push(obj);
   }
+  currentDashYear = y;
+  currentStatsYear = y;
+  currentTimeYear = y;
+  document.getElementById('year-select-dash').value = y;
+  document.getElementById('year-select-stats').value = y;
+  document.getElementById('year-select-time').value = y;
   resetForm();
   switchView('dashboard');
   scheduleAutoSave();
@@ -13399,85 +13472,200 @@ function renderBangladeshMap(locMap){
  const host=document.getElementById('bd-project-map'); if(!host)return;
  const template=document.getElementById('official-bd-map-template');
  if(!template){host.innerHTML='<div class="empty">Map template পাওয়া যায়নি</div>';return;}
- const normalized={}; Object.entries(locMap||{}).forEach(([k,v])=>{const n=normalizeDistrict(k);normalized[n]=(normalized[n]||0)+v});
- const max=Math.max(1,...Object.values(normalized));
- host.innerHTML='<div class="bd-map-stage official"><div class="district-tooltip official-tip"></div><div class="bd-map-legend"><span><i></i>Project location</span><span><i></i>No project</span></div></div><div class="map-active-list"></div>';
- const stage=host.querySelector('.bd-map-stage'); stage.insertBefore(template.content.cloneNode(true),stage.firstChild);
+
+ const normalized={};
+ Object.entries(locMap||{}).forEach(([name,value])=>{
+   const key=normalizeDistrict(name);
+   if(!key || key==='unspecified') return;
+   normalized[key]=(normalized[key]||0)+(Number(value)||0);
+ });
+ const values=Object.values(normalized).filter(v=>v>0);
+ const max=Math.max(1,...values);
+ const dark=document.documentElement.dataset.themeMode==='dark';
+ const noProject=dark?'#27364c':'#e7eef8';
+ const palette=dark?['#365d8d','#3478bd','#397fe7','#6d5dfc']:['#bfdbfe','#93c5fd','#3b82f6','#4f46e5'];
+ const colorFor=count=>{
+   if(!count) return noProject;
+   if(max<=1) return palette[2];
+   const ratio=count/max;
+   if(ratio<=.25) return palette[0];
+   if(ratio<=.55) return palette[1];
+   if(ratio<1) return palette[2];
+   return palette[3];
+ };
+
+ host.innerHTML='<div class="bd-map-stage official"><div class="district-tooltip official-tip"></div><div class="bd-map-legend"><span class="map-l0"><i></i>No project</span><span class="map-l1"><i></i>Low</span><span class="map-l2"><i></i>Medium</span><span class="map-l3"><i></i>Highest</span></div></div><div class="map-active-list"></div>';
+ const stage=host.querySelector('.bd-map-stage');
+ stage.insertBefore(template.content.cloneNode(true),stage.firstChild);
  const svg=stage.querySelector('svg'),tip=stage.querySelector('.district-tooltip');
  if(!svg)return;
+ // The source SVG also contains a population-density overlay and its old legend.
+ // Keep only the actual 64-district map so project colors remain visible.
+ [...svg.children].forEach(node=>{
+   const tag=node.tagName.toLowerCase();
+   if(node.id!=='Map' && tag!=='defs' && tag!=='title') node.remove();
+ });
+ svg.removeAttribute('width'); svg.removeAttribute('height');
+ svg.setAttribute('viewBox','175 -6 600 806');
+ svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+
  const activeList=host.querySelector('.map-active-list');
- const activeDistricts=Object.entries(normalized).filter(([k,v])=>k&&k!=='unspecified'&&v>0).sort((a,b)=>b[1]-a[1]);
- if(activeList) activeList.innerHTML=activeDistricts.length?activeDistricts.map(([key,count])=>{const found=BD_DISTRICTS.find(d=>normalizeDistrict(d[0])===key);const name=found?found[0]:key.replace(/\b\w/g,c=>c.toUpperCase());return `<span class=\"map-active-chip\">${name}<b>${count}</b></span>`}).join(''):'<span class=\"map-active-chip\">No project locations for this year</span>';
- svg.removeAttribute('width');svg.removeAttribute('height');
+ const activeDistricts=Object.entries(normalized).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+ if(activeList){
+   activeList.innerHTML=activeDistricts.length
+     ? activeDistricts.map(([key,count])=>{
+         const found=BD_DISTRICTS.find(d=>normalizeDistrict(d[0])===key);
+         const name=found?found[0]:key.replace(/\b\w/g,c=>c.toUpperCase());
+         return `<span class="map-active-chip" title="${esc(name)}: ${count} project${count===1?'':'s'}">${esc(name)}<b>${count}</b></span>`;
+       }).join('')
+     : '<span class="map-active-chip">No project locations for this year</span>';
+ }
+
  const bnByEn=Object.fromEntries(BD_DISTRICTS.map(d=>[normalizeDistrict(d[0]),d[1]]));
  svg.querySelectorAll('[id$="_District"]').forEach(el=>{
-   const raw=el.id.replace(/_District$/,''); const canonical=SVG_DISTRICT_TO_CANONICAL[raw]||raw.replace(/_/g,' '); const key=normalizeDistrict(canonical); const count=normalized[key]||0;
-   if(count)el.classList.add('has-project'); if(count===max&&count>0)el.classList.add('hot');
-   const mix=(a,b,t)=>{const pa=a.match(/\w\w/g).map(x=>parseInt(x,16)),pb=b.match(/\w\w/g).map(x=>parseInt(x,16));return '#'+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,'0')).join('')};
-   const intensity=count?(.22+.78*(count/max)):0;
-   const baseFill=count?mix('#cfeeff','#6557ef',intensity):'rgba(218,235,249,.48)';
+   const raw=el.id.replace(/_District$/,'');
+   const canonical=SVG_DISTRICT_TO_CANONICAL[raw]||raw.replace(/_/g,' ');
+   const key=normalizeDistrict(canonical);
+   const count=normalized[key]||0;
+   const baseFill=colorFor(count);
+
+   el.classList.toggle('has-project',count>0);
+   el.classList.toggle('hot',count===max&&count>0);
+   el.style.setProperty('--district-fill',baseFill);
    el.style.setProperty('fill',baseFill,'important');
-   el.style.setProperty('stroke','rgba(255,255,255,.82)','important');
-   el.dataset.name=canonical;el.dataset.count=count;el.dataset.baseFill=baseFill;el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',`${canonical}: ${count} projects`);
-   const show=()=>{el.style.setProperty('fill','#6d5dfc','important');const r=stage.getBoundingClientRect();const er=el.getBoundingClientRect();const x=er.left-r.left+er.width/2;const y=er.top-r.top;tip.style.left=x+'px';tip.style.top=y+'px';tip.innerHTML=`<b>${canonical}</b>${bnByEn[key]?` · ${bnByEn[key]}`:''}<br><span class="map-project-badge">${count} Project${count===1?'':'s'}</span>`;tip.style.opacity='1'};
-   const hide=()=>{if(!el.classList.contains('selected'))el.style.setProperty('fill',baseFill,'important');tip.style.opacity='0'};
-   el.addEventListener('mouseenter',show);el.addEventListener('mouseleave',hide);el.addEventListener('focus',show);el.addEventListener('blur',hide);
-   el.addEventListener('click',()=>{svg.querySelectorAll('.selected').forEach(x=>{x.classList.remove('selected');x.style.setProperty('fill',x.dataset.baseFill||'rgba(218,235,249,.48)','important')});el.classList.add('selected');el.style.setProperty('fill','#6d5dfc','important');const input=document.getElementById('f-location');if(input)input.value=canonical;show();});
+   el.setAttribute('fill',baseFill);
+   el.dataset.name=canonical;
+   el.dataset.count=String(count);
+   el.dataset.baseFill=baseFill;
+   el.setAttribute('tabindex','0');
+   el.setAttribute('role','button');
+   el.setAttribute('aria-label',`${canonical}: ${count} project${count===1?'':'s'}`);
+
+   const oldTitle=el.querySelector(':scope > title'); if(oldTitle) oldTitle.remove();
+   const title=document.createElementNS('http://www.w3.org/2000/svg','title');
+   title.textContent=`${canonical}: ${count} project${count===1?'':'s'}`;
+   el.prepend(title);
+
+   const show=()=>{
+     el.style.setProperty('fill','#7c3aed','important');
+     const r=stage.getBoundingClientRect(),er=el.getBoundingClientRect();
+     const x=Math.max(78,Math.min(r.width-78,er.left-r.left+er.width/2));
+     const y=Math.max(56,er.top-r.top);
+     tip.style.left=x+'px'; tip.style.top=y+'px';
+     tip.innerHTML=`<b>${esc(canonical)}</b>${bnByEn[key]?` · ${esc(bnByEn[key])}`:''}<br><span class="map-project-badge">${count} Project${count===1?'':'s'}</span>`;
+     tip.style.opacity='1';
+   };
+   const hide=()=>{
+     if(!el.classList.contains('selected')) el.style.setProperty('fill',baseFill,'important');
+     tip.style.opacity='0';
+   };
+   el.addEventListener('mouseenter',show); el.addEventListener('mouseleave',hide);
+   el.addEventListener('focus',show); el.addEventListener('blur',hide);
+   el.addEventListener('click',()=>{
+     svg.querySelectorAll('.selected').forEach(node=>{
+       node.classList.remove('selected');
+       node.style.setProperty('fill',node.dataset.baseFill||noProject,'important');
+     });
+     el.classList.add('selected');
+     show();
+   });
+   el.addEventListener('keydown',event=>{
+     if(event.key==='Enter'||event.key===' '){event.preventDefault();el.click();}
+   });
  });
 }
 
 
+
+const analyticsCenterTextPlugin={
+ id:'analyticsCenterText',
+ afterDraw(chart,args,opts){
+   if(!opts||opts.display===false||!chart.chartArea)return;
+   const {ctx,chartArea:{left,right,top,bottom}}=chart;
+   const x=(left+right)/2,y=(top+bottom)/2;
+   ctx.save();
+   ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillStyle=opts.color||getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#183153';
+   ctx.font=`800 ${opts.fontSize||24}px Inter, Segoe UI, sans-serif`;
+   ctx.fillText(opts.text||'',x,y-6);
+   if(opts.subtext){ctx.fillStyle=opts.subColor||'#7890aa';ctx.font='700 9px JetBrains Mono, monospace';ctx.fillText(String(opts.subtext).toUpperCase(),x,y+16);}
+   ctx.restore();
+ }
+};
+function chartThemeTokens(){
+ const styles=getComputedStyle(document.documentElement);
+ return {
+   text:styles.getPropertyValue('--text').trim()||'#183153',
+   muted:styles.getPropertyValue('--muted').trim()||'#6f86a0',
+   grid:document.documentElement.dataset.themeMode==='dark'?'rgba(148,163,184,.13)':'rgba(71,103,145,.12)',
+   panel:styles.getPropertyValue('--panel').trim()||'#ffffff'
+ };
+}
+function modernTooltipOptions(){
+ return {backgroundColor:'rgba(15,23,42,.92)',titleColor:'#fff',bodyColor:'#dbeafe',padding:12,cornerRadius:12,displayColors:true,boxPadding:5,usePointStyle:true};
+}
+
 function renderStats(){
   currentStatsYear = parseInt(document.getElementById('year-select-stats').value) || currentDashYear;
+  document.getElementById('year-select-stats').value=currentStatsYear;
   document.getElementById('stats-sub').textContent = 'STATISTICS — ' + currentStatsYear;
   const yearProjects = projects.filter(p=>new Date(p.date).getFullYear()===currentStatsYear);
 
   const doneCount = p => DISCIPLINES.every(k=>p[k] && p[k].status==='Done');
   document.getElementById('stats-summary').innerHTML = [
     {num: yearProjects.length, label:`মোট প্রজেক্ট (${currentStatsYear})`},
-    {num: new Set(yearProjects.map(p=>p.location).filter(Boolean)).size, label:'ভিন্ন Location'},
+    {num: new Set(yearProjects.map(p=>normalizeDistrict(p.location)).filter(Boolean)).size, label:'ভিন্ন Location'},
     {num: yearProjects.filter(doneCount).length, label:'সম্পূর্ণ প্রজেক্ট'},
     {num: yearProjects.length? Math.round(yearProjects.filter(doneCount).length/yearProjects.length*100)+'%':'0%', label:'Completion Rate'},
   ].map(c=>`<div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
 
   const monthCounts = MONTHS.map((m,i)=>yearProjects.filter(p=>new Date(p.date).getMonth()===i).length);
-  const pinkGlass = document.documentElement.dataset.theme === 'pink-glass';
-  const chartColors = ['rgba(101,87,239,.82)','rgba(80,123,238,.72)','rgba(54,163,218,.68)','rgba(50,196,201,.62)','rgba(126,108,240,.58)','rgba(72,145,220,.55)','rgba(103,196,224,.52)','rgba(151,132,245,.50)'];
-
   const storeyMap = {}; yearProjects.forEach(p=>{ const k=p.storey||'Unspecified'; storeyMap[k]=(storeyMap[k]||0)+1; });
   const locMap = {}; yearProjects.forEach(p=>{ const k=p.location||'Unspecified'; locMap[k]=(locMap[k]||0)+1; });
   const statusMap = {'Not Started':0,'In Progress':0,'Pending':0,'Done':0};
   yearProjects.forEach(p=>{ const s=(p.structural&&p.structural.status)||'Not Started'; statusMap[s] = (statusMap[s]||0)+1; });
 
-  const gridColor = pinkGlass ? 'rgba(115,66,170,0.12)' : 'rgba(120,170,210,0.12)';
-  const textColor = pinkGlass ? '#73568e' : '#8fadc4';
-  Chart.defaults.color = textColor;
-  Chart.defaults.borderColor = gridColor;
+  const theme=chartThemeTokens();
+  Chart.defaults.color=theme.muted;
+  Chart.defaults.borderColor=theme.grid;
+  Chart.defaults.font.family='Inter, Segoe UI, sans-serif';
 
   if(chartMonth) chartMonth.destroy();
-  chartMonth = new Chart(document.getElementById('chart-month'), {
+  const monthCanvas=document.getElementById('chart-month');
+  chartMonth = new Chart(monthCanvas, {
     type:'line',
-    data:{labels:MONTHS.map(m=>m.slice(0,3)), datasets:[{label:'Projects', data:monthCounts, borderColor:pinkGlass?'#9257f4':'#477cff', backgroundColor:pinkGlass?'rgba(191,112,255,.25)':'rgba(71,124,255,.18)', fill:true, tension:.48, borderWidth:3, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:'#fff', pointBorderWidth:3}]},
-    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{precision:0}}}}
+    data:{labels:MONTHS.map(m=>m.slice(0,3)),datasets:[{
+      label:'Projects',data:monthCounts,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,.15)',fill:true,tension:.42,borderWidth:3.5,
+      pointRadius:monthCounts.map(v=>v?4:2),pointHoverRadius:7,pointBackgroundColor:'#ffffff',pointBorderColor:'#4f46e5',pointBorderWidth:3
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{top:12,right:8,bottom:2,left:4}},
+      plugins:{legend:{display:false},tooltip:modernTooltipOptions()},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{color:theme.muted,font:{weight:'600'}}},y:{beginAtZero:true,suggestedMax:Math.max(3,...monthCounts),grid:{color:theme.grid,drawTicks:false},border:{display:false},ticks:{precision:0,padding:10,color:theme.muted}}}
+    }
   });
 
+  const storeyLabels=Object.keys(storeyMap),storeyValues=Object.values(storeyMap);
+  const doughnutColors=['#4f46e5','#0ea5e9','#14b8a6','#f59e0b','#ec4899','#8b5cf6','#22c55e','#64748b'];
   if(chartStorey) chartStorey.destroy();
   chartStorey = new Chart(document.getElementById('chart-storey'), {
-    type:'doughnut',
-    data:{labels:Object.keys(storeyMap), datasets:[{data:Object.values(storeyMap), backgroundColor:chartColors,borderColor:'rgba(255,255,255,.72)',borderWidth:2,hoverOffset:8}]},
-    options:{cutout:'68%',plugins:{legend:{position:'bottom', labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:16,font:{size:11}}},tooltip:{backgroundColor:'rgba(20,31,58,.86)',padding:12,cornerRadius:12,displayColors:true}}}
+    type:'doughnut',plugins:[analyticsCenterTextPlugin],
+    data:{labels:storeyLabels,datasets:[{data:storeyValues,backgroundColor:doughnutColors.slice(0,Math.max(1,storeyLabels.length)),borderColor:'rgba(255,255,255,.92)',borderWidth:3,hoverOffset:10,spacing:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'72%',layout:{padding:{top:4,bottom:4}},
+      plugins:{analyticsCenterText:{text:String(storeyValues.reduce((a,b)=>a+b,0)),subtext:'PROJECTS',color:theme.text,subColor:theme.muted},legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:16,color:theme.muted,font:{size:11,weight:'600'}}},tooltip:modernTooltipOptions()}}
   });
 
   if(chartLocation){ chartLocation.destroy(); chartLocation=null; }
   renderBangladeshMap(locMap);
 
+  const statusLabels=Object.keys(statusMap),statusValues=Object.values(statusMap);
   if(chartStatus) chartStatus.destroy();
   chartStatus = new Chart(document.getElementById('chart-status'), {
-    type:'doughnut',
-    data:{labels:Object.keys(statusMap), datasets:[{data:Object.values(statusMap), backgroundColor:['rgba(111,93,252,.82)','rgba(84,125,235,.68)','rgba(72,174,215,.58)','rgba(52,201,205,.72)'],borderColor:'rgba(255,255,255,.72)',borderWidth:2,hoverOffset:8}]},
-    options:{cutout:'70%',plugins:{legend:{position:'bottom', labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:16,font:{size:11}}},tooltip:{backgroundColor:'rgba(20,31,58,.86)',padding:12,cornerRadius:12,displayColors:true}}}
+    type:'doughnut',plugins:[analyticsCenterTextPlugin],
+    data:{labels:statusLabels,datasets:[{data:statusValues,backgroundColor:['#94a3b8','#0ea5e9','#f59e0b','#10b981'],borderColor:'rgba(255,255,255,.92)',borderWidth:3,hoverOffset:10,spacing:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{analyticsCenterText:{text:String(yearProjects.length),subtext:'TOTAL',color:theme.text,subColor:theme.muted},legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:15,color:theme.muted,font:{size:11,weight:'600'}}},tooltip:modernTooltipOptions()}}
   });
 }
+
 
 /* ================= TIME ANALYSIS ================= */
 const DISC_LABELS = {structural:'Structural', architectural:'Architectural', electrical:'Electrical', plumbing:'Plumbing'};
@@ -13488,74 +13676,55 @@ function renderTimeAnalysis(){
   document.getElementById('time-sub').textContent = 'TIME ANALYSIS — ' + currentTimeYear;
 
   const yearProjects = projects.filter(p=>new Date(p.date).getFullYear()===currentTimeYear);
-
-  // Build a flat list of timed entries
   const entries = [];
   yearProjects.forEach(p=>{
     DISCIPLINES.forEach(k=>{
-      const d = p[k];
-      if(!d) return;
-      const hrs = durationHours(d.received, d.completed);
-      if(hrs===null) return;
-      entries.push({
-        project: p.pname || '(নামহীন)',
-        discipline: DISC_LABELS[k],
-        person: d.doneBy || 'অজানা',
-        start: d.received,
-        end: d.completed,
-        hours: hrs
-      });
+      const d = p[k]; if(!d) return;
+      const hrs = durationHours(d.received, d.completed); if(hrs===null) return;
+      entries.push({project:p.pname||'(নামহীন)',discipline:DISC_LABELS[k],person:d.doneBy||'অজানা',start:d.received,end:d.completed,hours:hrs});
     });
   });
 
+  const totalHours=entries.reduce((s,e)=>s+e.hours,0);
   document.getElementById('time-summary').innerHTML = [
     {num: entries.length, label:'টাইম-লগ এন্ট্রি'},
-    {num: entries.reduce((s,e)=>s+e.hours,0).toFixed(1), label:'মোট ঘন্টা'},
+    {num: totalHours.toFixed(1), label:'মোট ঘন্টা'},
     {num: new Set(entries.map(e=>e.person)).size, label:'ভিন্ন ব্যক্তি'},
-    {num: entries.length? (entries.reduce((s,e)=>s+e.hours,0)/entries.length).toFixed(1) : '0', label:'গড় সময়/এন্ট্রি (ঘন্টা)'},
+    {num: entries.length? (totalHours/entries.length).toFixed(1) : '0', label:'গড় সময়/এন্ট্রি (ঘন্টা)'},
   ].map(c=>`<div class="stat-card"><div class="num">${c.num}</div><div class="label">${c.label}</div></div>`).join('');
 
-  // Aggregate per project
-  const projMap = {};
-  entries.forEach(e=>{ projMap[e.project] = (projMap[e.project]||0) + e.hours; });
-  // Aggregate per person
-  const personMap = {};
-  entries.forEach(e=>{ personMap[e.person] = (personMap[e.person]||0) + e.hours; });
-
-  const chartColors = ['#f2994a','#4fc38a','#56a2c2','#e2574c','#f2c94a','#9b6ef2','#f27ab0','#6ee7b7'];
-  const gridColor = 'rgba(120,170,210,0.12)';
-  const textColor = '#8fadc4';
-  Chart.defaults.color = textColor;
-  Chart.defaults.borderColor = gridColor;
+  const projMap = {}; entries.forEach(e=>{ projMap[e.project]=(projMap[e.project]||0)+e.hours; });
+  const personMap = {}; entries.forEach(e=>{ personMap[e.person]=(personMap[e.person]||0)+e.hours; });
+  const projectEntries=Object.entries(projMap).sort((a,b)=>b[1]-a[1]);
+  const personEntries=Object.entries(personMap).sort((a,b)=>b[1]-a[1]);
+  const theme=chartThemeTokens();
+  Chart.defaults.color=theme.muted; Chart.defaults.borderColor=theme.grid; Chart.defaults.font.family='Inter, Segoe UI, sans-serif';
 
   if(chartTimeProject) chartTimeProject.destroy();
   chartTimeProject = new Chart(document.getElementById('chart-time-project'), {
     type:'bar',
-    data:{ labels:Object.keys(projMap), datasets:[{label:'ঘন্টা', data:Object.values(projMap).map(v=>+v.toFixed(2)), backgroundColor:'#f2994a', borderRadius:4}] },
-    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true}} }
+    data:{labels:projectEntries.map(([name])=>name),datasets:[{label:'Hours',data:projectEntries.map(([,v])=>+v.toFixed(2)),backgroundColor:['#4f46e5','#5b5ee8','#6366f1','#4b7bec','#2f80ed','#0ea5e9','#14b8a6','#22c55e'],borderWidth:0,borderRadius:12,borderSkipped:false,barThickness:28,maxBarThickness:34}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',interaction:{mode:'nearest',axis:'y',intersect:false},layout:{padding:{top:7,right:18,bottom:5,left:4}},
+      plugins:{legend:{display:false},tooltip:{...modernTooltipOptions(),callbacks:{label:ctx=>` ${Number(ctx.raw).toFixed(1)} hours`}}},
+      scales:{x:{beginAtZero:true,grid:{color:theme.grid,drawTicks:false},border:{display:false},ticks:{color:theme.muted,padding:9,callback:v=>`${v}h`}},y:{grid:{display:false},border:{display:false},ticks:{color:theme.text,padding:10,font:{size:11,weight:'700'},callback:function(value){const label=this.getLabelForValue(value);return label.length>28?label.slice(0,27)+'…':label;}}}}
+    }
   });
 
+  const peopleColors=['#fb923c','#22c55e','#38bdf8','#8b5cf6','#ec4899','#facc15','#14b8a6','#64748b'];
   if(chartTimePerson) chartTimePerson.destroy();
   chartTimePerson = new Chart(document.getElementById('chart-time-person'), {
-    type:'doughnut',
-    data:{ labels:Object.keys(personMap), datasets:[{data:Object.values(personMap).map(v=>+v.toFixed(2)), backgroundColor:chartColors}] },
-    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}} }
+    type:'doughnut',plugins:[analyticsCenterTextPlugin],
+    data:{labels:personEntries.map(([name])=>name),datasets:[{data:personEntries.map(([,v])=>+v.toFixed(2)),backgroundColor:peopleColors.slice(0,Math.max(1,personEntries.length)),borderColor:'rgba(255,255,255,.94)',borderWidth:3,hoverOffset:12,spacing:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',layout:{padding:{top:4,bottom:4}},
+      plugins:{analyticsCenterText:{text:totalHours.toFixed(1),subtext:'TOTAL HOURS',color:theme.text,subColor:theme.muted,fontSize:23},legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,padding:15,color:theme.muted,font:{size:11,weight:'600'}}},tooltip:{...modernTooltipOptions(),callbacks:{label:ctx=>` ${ctx.label}: ${Number(ctx.raw).toFixed(1)} hours`}}}}
   });
 
   document.getElementById('time-empty').style.display = entries.length? 'none':'block';
-  document.getElementById('time-table-body').innerHTML = entries
-    .sort((a,b)=> new Date(b.start) - new Date(a.start))
-    .map(e=>`
-    <tr>
-      <td>${esc(e.project)}</td>
-      <td>${esc(e.discipline)}</td>
-      <td>${esc(e.person)}</td>
-      <td>${fmtDateTime(e.start)}</td>
-      <td>${fmtDateTime(e.end)}</td>
-      <td>${fmtDuration(e.hours)}</td>
-    </tr>
+  document.getElementById('time-table-body').innerHTML = entries.sort((a,b)=>new Date(b.start)-new Date(a.start)).map(e=>`
+    <tr><td>${esc(e.project)}</td><td>${esc(e.discipline)}</td><td>${esc(e.person)}</td><td>${fmtDateTime(e.start)}</td><td>${fmtDateTime(e.end)}</td><td>${fmtDuration(e.hours)}</td></tr>
   `).join('');
 }
+
 
 /* ================= EMPLOYEE / PEOPLE PROFILES =================
    যেই কোনো প্রজেক্টে Employee বা Done By ঘরে একটা নাম একবার সেভ হলে
@@ -13940,7 +14109,7 @@ function jumpToTop(){ window.scrollTo({top:0, behavior:'smooth'}); document.quer
 document.addEventListener('keydown', e=>{
   if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
     e.preventDefault();
-    document.getElementById('global-project-search')?.focus();
+    openQuickSearch();
   }
   if(e.key==='Escape' && document.body.classList.contains('focus-mode')) toggleFocusMode();
 });
@@ -13950,7 +14119,7 @@ window.addEventListener('DOMContentLoaded', populateDistrictDatalist);
 </script>
 <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 <div class="glass-dock" id="glass-dock" style="display:none" aria-label="Quick controls">
-  <button type="button" title="Search (Ctrl + K)" aria-label="Search" onclick="document.getElementById('global-project-search').focus()">⌕</button>
+  <button type="button" title="Search (Ctrl + K)" aria-label="Search" onclick="openQuickSearch()">⌕</button>
   <button class="dock-focus" id="focus-toggle" type="button" title="Focus mode" aria-label="Toggle focus mode" onclick="toggleFocusMode()">◐</button>
   <span class="dock-divider" aria-hidden="true"></span>
   <button type="button" title="Back to top" aria-label="Back to top" onclick="jumpToTop()">↑</button>
